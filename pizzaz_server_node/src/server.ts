@@ -296,8 +296,8 @@ async function handlePostMessage(
   }
 }
 
-const portEnv = Number(process.env.PORT ?? 8000);
-const port = Number.isFinite(portEnv) ? portEnv : 8000;
+const portEnv = Number(process.env.PORT ?? 3000);
+const port = Number.isFinite(portEnv) ? portEnv : 3000;
 
 const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse) => {
   if (!req.url) {
