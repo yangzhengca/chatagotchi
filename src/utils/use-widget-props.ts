@@ -1,4 +1,4 @@
-import { useWebplusGlobal } from "./use-webplus-global";
+import { useWebplusGlobal } from "./use-webplus-global.ts";
 
 export function useWidgetProps<T extends Record<string, unknown>>(
   defaultState?: T | (() => T)

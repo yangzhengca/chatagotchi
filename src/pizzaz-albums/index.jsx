@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Maximize2 } from "lucide-react";
 import albumsData from "./albums.json";
-import { useMaxHeight } from "../use-max-height";
-import { useWebplusGlobal } from "../use-webplus-global";
+import { useMaxHeight } from "../utils/use-max-height";
+import { useWebplusGlobal } from "../utils/use-webplus-global";
 import FullscreenViewer from "./FullscreenViewer";
 import AlbumCard from "./AlbumCard";
 

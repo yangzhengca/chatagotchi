@@ -3,7 +3,7 @@ import {
   SET_GLOBALS_EVENT_TYPE,
   SetGlobalsEvent,
   type WebplusGlobals,
-} from "./types";
+} from "./types.ts";
 
 function createFallbackWebplus(): Window["webplus"] {
   const fallback: Partial<Window["webplus"]> = {

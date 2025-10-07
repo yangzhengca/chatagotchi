@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type SetStateAction } from "react";
-import { useWebplusGlobal } from "./use-webplus-global";
-import type { WidgetState } from "./types";
+import { useWebplusGlobal } from "./use-webplus-global.ts";
+import type { WidgetState } from "./types.ts";
 
 export function useWidgetState<T extends WidgetState>(
   defaultState: T | (() => T)

@@ -4,13 +4,11 @@
   "description": "",
   "main": "host/main.ts",
   "scripts": {
-    "build": "tsx ./build-all.mts",
-    "serve": "serve -s ./assets -p 4444 --cors",
-    "dev": "vite --config vite.config.mts",
+    "build": "vite build --config vite.config.mts",
+    "dev": "vite dev --config vite.config.mts",
     "tsc": "tsc -b",
     "tsc:app": "tsc -p tsconfig.app.json",
     "tsc:node": "tsc -p tsconfig.node.json",
-    "dev:host": "vite --config vite.host.config.mts",
     "start:mcp": "pnpm --filter ./pizzaz_server_node run start"
   },
   "keywords": [],

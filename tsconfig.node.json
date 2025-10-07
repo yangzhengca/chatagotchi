@@ -24,7 +24,6 @@
   "include": [
     "vite.host.config.mts",
     "vite.config.mts",
-    "build-all.mts",
-    "dev-all.mts"
+    "build-all.mts"
   ]
 }

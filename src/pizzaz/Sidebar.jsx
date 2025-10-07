@@ -1,6 +1,6 @@
 import React from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { useWebplusGlobal } from "../use-webplus-global";
+import { useWebplusGlobal } from "../utils/use-webplus-global";
 import { Filter, Settings2, Star } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
