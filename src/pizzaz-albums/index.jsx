@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight, Maximize2 } from 'lucide-react';
 import albumsData from './albums.json';
 import { useMaxHeight } from '../utils/use-max-height';
-import { useWebplusGlobal } from '../utils/use-webplus-global';
+import { useOpenAiGlobal } from '../utils/use-openai-global';
 import FullscreenViewer from './FullscreenViewer';
 import AlbumCard from './AlbumCard';
 
@@ -111,14 +111,14 @@ function AlbumsCarousel({ onSelect }) {
 }
 
 function App() {
-  const displayMode = useWebplusGlobal('displayMode');
+  const displayMode = useOpenAiGlobal('displayMode');
   const [selectedAlbum, setSelectedAlbum] = React.useState(null);
   const maxHeight = useMaxHeight() ?? undefined;
 
   const handleSelectAlbum = (album) => {
     setSelectedAlbum(album);
-    if (window?.webplus?.requestDisplayMode) {
-      window.webplus.requestDisplayMode({ mode: 'fullscreen' });
+    if (window?.openai?.requestDisplayMode) {
+      window.openai.requestDisplayMode({ mode: 'fullscreen' });
     }
   };
 

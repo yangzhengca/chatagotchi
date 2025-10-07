@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { createRoot } from 'react-dom/client';
-import markers from './markers.json';
-import { AnimatePresence } from 'framer-motion';
-import Inspector from './Inspector';
-import Sidebar from './Sidebar';
-import { useWebplusGlobal } from '../utils/use-webplus-global';
-import { useMaxHeight } from '../utils/use-max-height';
-import { Maximize2 } from 'lucide-react';
+import React, { useEffect, useRef, useState } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { createRoot } from "react-dom/client";
+import markers from "./markers.json";
+import { AnimatePresence } from "framer-motion";
+import Inspector from "./Inspector";
+import Sidebar from "./Sidebar";
+import { useOpenAiGlobal } from "../use-openai-global";
+import { useMaxHeight } from "../use-max-height";
+import { Maximize2 } from "lucide-react";
 import {
   useNavigate,
   useLocation,
@@ -16,10 +16,10 @@ import {
   Route,
   BrowserRouter,
   Outlet,
-} from 'react-router-dom';
+} from "react-router-dom";
 
 mapboxgl.accessToken =
-  'pk.eyJ1IjoiZXJpY25pbmciLCJhIjoiY21icXlubWM1MDRiczJvb2xwM2p0amNyayJ9.n-3O6JI5nOp_Lw96ZO5vJQ';
+  "pk.eyJ1IjoiZXJpY25pbmciLCJhIjoiY21icXlubWM1MDRiczJvb2xwM2p0amNyayJ9.n-3O6JI5nOp_Lw96ZO5vJQ";
 
 function fitMapToMarkers(map, coords) {
   if (!map || !coords.length) return;
@@ -51,15 +51,15 @@ export default function App() {
     center: markerCoords.length > 0 ? markerCoords[0] : [0, 0],
     zoom: markerCoords.length > 0 ? 12 : 2,
   }));
-  const displayMode = useWebplusGlobal('displayMode');
-  const allowInspector = displayMode === 'fullscreen';
+  const displayMode = useOpenAiGlobal("displayMode");
+  const allowInspector = displayMode === "fullscreen";
   const maxHeight = useMaxHeight() ?? undefined;
 
   useEffect(() => {
     if (mapObj.current) return;
     mapObj.current = new mapboxgl.Map({
       container: mapRef.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: "mapbox://styles/mapbox/streets-v12",
       center: markerCoords.length > 0 ? markerCoords[0] : [0, 0],
       zoom: markerCoords.length > 0 ? 12 : 2,
       attributionControl: false,
@@ -72,10 +72,10 @@ export default function App() {
     requestAnimationFrame(() => mapObj.current.resize());
 
     // or keep it in sync with window resizes
-    window.addEventListener('resize', mapObj.current.resize);
+    window.addEventListener("resize", mapObj.current.resize);
 
     return () => {
-      window.removeEventListener('resize', mapObj.current.resize);
+      window.removeEventListener("resize", mapObj.current.resize);
       mapObj.current.remove();
     };
     // eslint-disable-next-line
@@ -87,9 +87,9 @@ export default function App() {
       const c = mapObj.current.getCenter();
       setViewState({ center: [c.lng, c.lat], zoom: mapObj.current.getZoom() });
     };
-    mapObj.current.on('moveend', handler);
+    mapObj.current.on("moveend", handler);
     return () => {
-      mapObj.current.off('moveend', handler);
+      mapObj.current.off("moveend", handler);
     };
   }, []);
 
@@ -98,14 +98,14 @@ export default function App() {
     markerObjs.current = [];
     placesList.forEach((place) => {
       const marker = new mapboxgl.Marker({
-        color: '#F46C21',
+        color: "#F46C21",
       })
         .setLngLat(place.coords)
         .addTo(mapObj.current);
       const el = marker.getElement();
       if (el) {
-        el.style.cursor = 'pointer';
-        el.addEventListener('click', () => {
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
           navigate(`/place/${place.id}`);
           panTo(place.coords, { offsetForInspector: true });
         });
@@ -115,11 +115,11 @@ export default function App() {
   }
 
   function getInspectorOffsetPx() {
-    if (displayMode !== 'fullscreen') return 0;
-    if (typeof window === 'undefined') return 0;
+    if (displayMode !== "fullscreen") return 0;
+    if (typeof window === "undefined") return 0;
     const isXlUp =
-      window.matchMedia && window.matchMedia('(min-width: 1280px)').matches;
-    const el = document.querySelector('.pizzaz-inspector');
+      window.matchMedia && window.matchMedia("(min-width: 1280px)").matches;
+    const el = document.querySelector(".pizzaz-inspector");
     const w = el ? el.getBoundingClientRect().width : 360;
     const half = Math.round(w / 2);
     // xl: inspector on right → negative x offset; lg: inspector on left → positive x offset
@@ -163,9 +163,9 @@ export default function App() {
 
   useEffect(() => {
     if (
-      typeof window !== 'undefined' &&
+      typeof window !== "undefined" &&
       window.oai &&
-      typeof window.oai.widget.setState === 'function'
+      typeof window.oai.widget.setState === "function"
     ) {
       window.oai.widget.setState({
         center: viewState.center,
@@ -180,26 +180,26 @@ export default function App() {
       <div
         style={{
           maxHeight,
-          height: displayMode === 'fullscreen' ? maxHeight - 40 : 480,
+          height: displayMode === "fullscreen" ? maxHeight - 40 : 480,
         }}
         className={
-          'relative antialiased w-full min-h-[480px] overflow-hidden ' +
-          (displayMode === 'fullscreen'
-            ? 'rounded-none border-0'
-            : 'border border-black/10 dark:border-white/10 rounded-2xl sm:rounded-3xl')
+          "relative antialiased w-full min-h-[480px] overflow-hidden " +
+          (displayMode === "fullscreen"
+            ? "rounded-none border-0"
+            : "border border-black/10 dark:border-white/10 rounded-2xl sm:rounded-3xl")
         }
       >
         <Outlet />
-        {displayMode !== 'fullscreen' && (
+        {displayMode !== "fullscreen" && (
           <button
             aria-label="Enter fullscreen"
             className="absolute top-4 right-4 z-30 rounded-full bg-white text-black shadow-lg ring ring-black/5 p-2.5 pointer-events-auto"
             onClick={() => {
               if (selectedId) {
-                navigate('..', { replace: true });
+                navigate("..", { replace: true });
               }
               if (window?.webplus?.requestDisplayMode) {
-                window.webplus.requestDisplayMode({ mode: 'fullscreen' });
+                window.webplus.requestDisplayMode({ mode: "fullscreen" });
               }
             }}
           >
@@ -226,7 +226,7 @@ export default function App() {
             <Inspector
               key={selectedPlace.id}
               place={selectedPlace}
-              onClose={() => navigate('..')}
+              onClose={() => navigate("..")}
             />
           )}
         </AnimatePresence>
@@ -234,10 +234,10 @@ export default function App() {
         {/* Map */}
         <div
           className={
-            'absolute inset-0 overflow-hidden' +
-            (displayMode === 'fullscreen'
-              ? ' left-[340px] right-2 top-2 bottom-4 border border-black/10 rounded-3xl'
-              : '')
+            "absolute inset-0 overflow-hidden" +
+            (displayMode === "fullscreen"
+              ? " left-[340px] right-2 top-2 bottom-4 border border-black/10 rounded-3xl"
+              : "")
           }
         >
           <div
@@ -245,17 +245,17 @@ export default function App() {
             className="w-full h-full relative absolute bottom-0 left-0 right-0"
             style={{
               maxHeight,
-              height: displayMode === 'fullscreen' ? maxHeight : undefined,
+              height: displayMode === "fullscreen" ? maxHeight : undefined,
             }}
           />
         </div>
       </div>
 
       {/* Suggestion chips (bottom, fullscreen) */}
-      {displayMode === 'fullscreen' && (
+      {displayMode === "fullscreen" && (
         <div className="hidden antialiased md:flex absolute inset-x-0 bottom-2 z-30 justify-center pointer-events-none">
           <div className="flex gap-3 pointer-events-auto">
-            {['Open now', 'Top rated', 'Vegeterian friendly'].map((label) => (
+            {["Open now", "Top rated", "Vegeterian friendly"].map((label) => (
               <button
                 key={label}
                 className="rounded-full font-base bg-white ring ring-black/10 text-black px-4 py-1.5 text-sm hover:bg-[#f7f7f7] cursor-pointer"
@@ -280,7 +280,7 @@ function RouterRoot() {
   );
 }
 
-createRoot(document.getElementById('pizzaz-root')).render(
+createRoot(document.getElementById("pizzaz-root")).render(
   <BrowserRouter>
     <RouterRoot />
   </BrowserRouter>
