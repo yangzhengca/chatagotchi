@@ -1,20 +1,20 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import useEmblaCarousel from "embla-carousel-react";
-import { ArrowLeft, ArrowRight, Maximize2 } from "lucide-react";
-import albumsData from "./albums.json";
-import { useMaxHeight } from "../utils/use-max-height";
-import { useWebplusGlobal } from "../utils/use-webplus-global";
-import FullscreenViewer from "./FullscreenViewer";
-import AlbumCard from "./AlbumCard";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ArrowLeft, ArrowRight, Maximize2 } from 'lucide-react';
+import albumsData from './albums.json';
+import { useMaxHeight } from '../utils/use-max-height';
+import { useWebplusGlobal } from '../utils/use-webplus-global';
+import FullscreenViewer from './FullscreenViewer';
+import AlbumCard from './AlbumCard';
 
 function AlbumsCarousel({ onSelect }) {
   const albums = albumsData?.albums || [];
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "center",
+    align: 'center',
     loop: false,
-    containScroll: "trimSnaps",
-    slidesToScroll: "auto",
+    containScroll: 'trimSnaps',
+    slidesToScroll: 'auto',
     dragFree: false,
   });
   const [canPrev, setCanPrev] = React.useState(false);
@@ -27,11 +27,11 @@ function AlbumsCarousel({ onSelect }) {
       setCanNext(emblaApi.canScrollNext());
     };
     updateButtons();
-    emblaApi.on("select", updateButtons);
-    emblaApi.on("reInit", updateButtons);
+    emblaApi.on('select', updateButtons);
+    emblaApi.on('reInit', updateButtons);
     return () => {
-      emblaApi.off("select", updateButtons);
-      emblaApi.off("reInit", updateButtons);
+      emblaApi.off('select', updateButtons);
+      emblaApi.off('reInit', updateButtons);
     };
   }, [emblaApi]);
 
@@ -47,34 +47,34 @@ function AlbumsCarousel({ onSelect }) {
       <div
         aria-hidden
         className={
-          "pointer-events-none absolute inset-y-0 left-0 w-3 z-[5] transition-opacity duration-200 " +
-          (canPrev ? "opacity-100" : "opacity-0")
+          'pointer-events-none absolute inset-y-0 left-0 w-3 z-[5] transition-opacity duration-200 ' +
+          (canPrev ? 'opacity-100' : 'opacity-0')
         }
       >
         <div
           className="h-full w-full border-l border-black/15 bg-gradient-to-r from-black/10 to-transparent"
           style={{
             WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
             maskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
           }}
         />
       </div>
       <div
         aria-hidden
         className={
-          "pointer-events-none absolute inset-y-0 right-0 w-3 z-[5] transition-opacity duration-200 " +
-          (canNext ? "opacity-100" : "opacity-0")
+          'pointer-events-none absolute inset-y-0 right-0 w-3 z-[5] transition-opacity duration-200 ' +
+          (canNext ? 'opacity-100' : 'opacity-0')
         }
       >
         <div
           className="h-full w-full border-r border-black/15 bg-gradient-to-l from-black/10 to-transparent"
           style={{
             WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
             maskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
           }}
         />
       </div>
@@ -111,14 +111,14 @@ function AlbumsCarousel({ onSelect }) {
 }
 
 function App() {
-  const displayMode = useWebplusGlobal("displayMode");
+  const displayMode = useWebplusGlobal('displayMode');
   const [selectedAlbum, setSelectedAlbum] = React.useState(null);
   const maxHeight = useMaxHeight() ?? undefined;
 
   const handleSelectAlbum = (album) => {
     setSelectedAlbum(album);
     if (window?.webplus?.requestDisplayMode) {
-      window.webplus.requestDisplayMode({ mode: "fullscreen" });
+      window.webplus.requestDisplayMode({ mode: 'fullscreen' });
     }
   };
 
@@ -127,18 +127,18 @@ function App() {
       className="relative antialiased w-full"
       style={{
         maxHeight,
-        height: displayMode === "fullscreen" ? maxHeight : undefined,
+        height: displayMode === 'fullscreen' ? maxHeight : undefined,
       }}
     >
-      {displayMode !== "fullscreen" && (
+      {displayMode !== 'fullscreen' && (
         <AlbumsCarousel onSelect={handleSelectAlbum} />
       )}
 
-      {displayMode === "fullscreen" && selectedAlbum && (
+      {displayMode === 'fullscreen' && selectedAlbum && (
         <FullscreenViewer album={selectedAlbum} />
       )}
     </div>
   );
 }
 
-createRoot(document.getElementById("pizzaz-albums-root")).render(<App />);
+createRoot(document.getElementById('pizzaz-albums-root')).render(<App />);

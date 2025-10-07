@@ -1,20 +1,20 @@
-import React from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { useWebplusGlobal } from "../utils/use-webplus-global";
-import { Filter, Settings2, Star } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import React from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { useWebplusGlobal } from '../utils/use-webplus-global';
+import { Filter, Settings2, Star } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function PlaceListItem({ place, isSelected, onClick }) {
   return (
     <div
       className={
-        "rounded-2xl px-3 select-none hover:bg-black/5 cursor-pointer" +
-        (isSelected ? " bg-black/5" : "")
+        'rounded-2xl px-3 select-none hover:bg-black/5 cursor-pointer' +
+        (isSelected ? ' bg-black/5' : '')
       }
     >
       <div
         className={`border-b ${
-          isSelected ? "border-black/0" : "border-black/5"
+          isSelected ? 'border-black/0' : 'border-black/5'
         } hover:border-black/0`}
       >
         <button
@@ -45,8 +45,8 @@ function PlaceListItem({ place, isSelected, onClick }) {
 
 export default function Sidebar({ places, selectedId, onSelect }) {
   const [emblaRef] = useEmblaCarousel({ dragFree: true, loop: false });
-  const displayMode = useWebplusGlobal("displayMode");
-  const forceMobile = displayMode !== "fullscreen";
+  const displayMode = useWebplusGlobal('displayMode');
+  const forceMobile = displayMode !== 'fullscreen';
   const scrollRef = React.useRef(null);
   const [showBottomFade, setShowBottomFade] = React.useState(false);
 
@@ -63,11 +63,11 @@ export default function Sidebar({ places, selectedId, onSelect }) {
     const el = scrollRef.current;
     if (!el) return;
     const onScroll = () => updateBottomFadeVisibility();
-    el.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", updateBottomFadeVisibility);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateBottomFadeVisibility);
     return () => {
-      el.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", updateBottomFadeVisibility);
+      el.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', updateBottomFadeVisibility);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [places]);
@@ -77,7 +77,7 @@ export default function Sidebar({ places, selectedId, onSelect }) {
       {/* Desktop/Tablet sidebar */}
       <div
         className={`${
-          forceMobile ? "hidden" : ""
+          forceMobile ? 'hidden' : ''
         } absolute inset-y-0 bottom-4 left-0 z-20 w-[340px] max-w-[75%] pointer-events-auto`}
       >
         <div
@@ -96,7 +96,7 @@ export default function Sidebar({ places, selectedId, onSelect }) {
                 key={place.id}
                 place={place}
                 isSelected={
-                  displayMode === "fullscreen" && selectedId === place.id
+                  displayMode === 'fullscreen' && selectedId === place.id
                 }
                 onClick={() => onSelect(place)}
               />
@@ -116,9 +116,9 @@ export default function Sidebar({ places, selectedId, onSelect }) {
                 className="w-full h-full bg-gradient-to-t border-b border-black/50 from-black/15 to-black/0"
                 style={{
                   WebkitMaskImage:
-                    "linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 25%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 100%)",
+                    'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 25%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 100%)',
                   maskImage:
-                    "linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 25%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 100%)",
+                    'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 25%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 100%)',
                 }}
                 aria-hidden
               />
@@ -130,7 +130,7 @@ export default function Sidebar({ places, selectedId, onSelect }) {
       {/* Mobile bottom carousel */}
       <div
         className={`${
-          forceMobile ? "" : "hidden"
+          forceMobile ? '' : 'hidden'
         } absolute inset-x-0 bottom-0 z-20 pointer-events-auto`}
       >
         <div className="pt-2 text-black">
@@ -142,7 +142,7 @@ export default function Sidebar({ places, selectedId, onSelect }) {
                     key={place.id}
                     place={place}
                     isSelected={
-                      displayMode === "fullscreen" && selectedId === place.id
+                      displayMode === 'fullscreen' && selectedId === place.id
                     }
                     onClick={() => onSelect(place)}
                   />

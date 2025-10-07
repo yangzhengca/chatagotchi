@@ -1,6 +1,6 @@
-import React from "react";
-import { useMaxHeight } from "../utils/use-max-height";
-import FilmStrip from "./FilmStrip";
+import React from 'react';
+import { useMaxHeight } from '../utils/use-max-height';
+import FilmStrip from './FilmStrip';
 
 export default function FullscreenViewer({ album }) {
   const maxHeight = useMaxHeight() ?? undefined;

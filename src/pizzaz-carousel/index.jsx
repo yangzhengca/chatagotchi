@@ -1,17 +1,17 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import useEmblaCarousel from "embla-carousel-react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import markers from "../pizzaz/markers.json";
-import PlaceCard from "./PlaceCard";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import markers from '../pizzaz/markers.json';
+import PlaceCard from './PlaceCard';
 
 function App() {
   const places = markers?.places || [];
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "center",
+    align: 'center',
     loop: false,
-    containScroll: "trimSnaps",
-    slidesToScroll: "auto",
+    containScroll: 'trimSnaps',
+    slidesToScroll: 'auto',
     dragFree: false,
   });
   const [canPrev, setCanPrev] = React.useState(false);
@@ -24,11 +24,11 @@ function App() {
       setCanNext(emblaApi.canScrollNext());
     };
     updateButtons();
-    emblaApi.on("select", updateButtons);
-    emblaApi.on("reInit", updateButtons);
+    emblaApi.on('select', updateButtons);
+    emblaApi.on('reInit', updateButtons);
     return () => {
-      emblaApi.off("select", updateButtons);
-      emblaApi.off("reInit", updateButtons);
+      emblaApi.off('select', updateButtons);
+      emblaApi.off('reInit', updateButtons);
     };
   }, [emblaApi]);
 
@@ -45,34 +45,34 @@ function App() {
       <div
         aria-hidden
         className={
-          "pointer-events-none absolute inset-y-0 left-0 w-3 z-[5] transition-opacity duration-200 " +
-          (canPrev ? "opacity-100" : "opacity-0")
+          'pointer-events-none absolute inset-y-0 left-0 w-3 z-[5] transition-opacity duration-200 ' +
+          (canPrev ? 'opacity-100' : 'opacity-0')
         }
       >
         <div
           className="h-full w-full border-l border-black/15 bg-gradient-to-r from-black/10 to-transparent"
           style={{
             WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
             maskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
           }}
         />
       </div>
       <div
         aria-hidden
         className={
-          "pointer-events-none absolute inset-y-0 right-0 w-3 z-[5] transition-opacity duration-200 " +
-          (canNext ? "opacity-100" : "opacity-0")
+          'pointer-events-none absolute inset-y-0 right-0 w-3 z-[5] transition-opacity duration-200 ' +
+          (canNext ? 'opacity-100' : 'opacity-0')
         }
       >
         <div
           className="h-full w-full border-r border-black/15 bg-gradient-to-l from-black/10 to-transparent"
           style={{
             WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
             maskImage:
-              "linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)",
+              'linear-gradient(to bottom, transparent 0%, white 30%, white 70%, transparent 100%)',
           }}
         />
       </div>
@@ -108,4 +108,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("pizzaz-carousel-root")).render(<App />);
+createRoot(document.getElementById('pizzaz-carousel-root')).render(<App />);

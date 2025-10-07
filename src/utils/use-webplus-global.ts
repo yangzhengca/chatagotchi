@@ -1,16 +1,16 @@
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore } from 'react';
 import {
   SET_GLOBALS_EVENT_TYPE,
   SetGlobalsEvent,
   type WebplusGlobals,
-} from "./types.ts";
+} from './types.ts';
 
-function createFallbackWebplus(): Window["webplus"] {
-  const fallback: Partial<Window["webplus"]> = {
-    theme: "light",
+function createFallbackWebplus(): Window['webplus'] {
+  const fallback: Partial<Window['webplus']> = {
+    theme: 'light',
     userAgent: {},
     maxHeight: Number.POSITIVE_INFINITY,
-    displayMode: "inline",
+    displayMode: 'inline',
     safeArea: { insets: { top: 0, bottom: 0, left: 0, right: 0 } },
     toolInput: {},
     toolOutput: {},
@@ -19,7 +19,7 @@ function createFallbackWebplus(): Window["webplus"] {
 
   const dispatchGlobals = (globals: Partial<WebplusGlobals>) => {
     Object.assign(fallback, globals);
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.dispatchEvent(
         new SetGlobalsEvent(SET_GLOBALS_EVENT_TYPE, {
           detail: { globals },
@@ -29,18 +29,22 @@ function createFallbackWebplus(): Window["webplus"] {
   };
 
   Object.assign(fallback, {
-    setWidgetState: async (state: WebplusGlobals["widgetState"]) => {
+    setWidgetState: async (state: WebplusGlobals['widgetState']) => {
       dispatchGlobals({ widgetState: state });
     },
-    requestDisplayMode: async ({ mode }: { mode: WebplusGlobals["displayMode"] }) => {
+    requestDisplayMode: async ({
+      mode,
+    }: {
+      mode: WebplusGlobals['displayMode'];
+    }) => {
       dispatchGlobals({ displayMode: mode });
       return { mode };
     },
-    callTool: async () => ({ result: "" }),
+    callTool: async () => ({ result: '' }),
     callCompletion: async () => ({
-      content: { type: "text", text: "" },
-      model: "mock",
-      role: "assistant",
+      content: { type: 'text', text: '' },
+      model: 'mock',
+      role: 'assistant',
     }),
     streamCompletion: async function* () {
       return;
@@ -50,13 +54,13 @@ function createFallbackWebplus(): Window["webplus"] {
     },
   });
 
-  return fallback as Window["webplus"];
+  return fallback as Window['webplus'];
 }
 
-let fallbackInstance: Window["webplus"] | null = null;
+let fallbackInstance: Window['webplus'] | null = null;
 
-function ensureWebplus(): Window["webplus"] {
-  if (typeof window === "undefined") {
+function ensureWebplus(): Window['webplus'] {
+  if (typeof window === 'undefined') {
     fallbackInstance ??= createFallbackWebplus();
     return fallbackInstance;
   }
@@ -75,7 +79,7 @@ export function useWebplusGlobal<K extends keyof WebplusGlobals>(
 ): WebplusGlobals[K] {
   return useSyncExternalStore(
     (onChange) => {
-      if (typeof window === "undefined") {
+      if (typeof window === 'undefined') {
         return () => {};
       }
 

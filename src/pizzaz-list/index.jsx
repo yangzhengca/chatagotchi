@@ -1,7 +1,7 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import markers from "../pizzaz/markers.json";
-import { PlusCircle, Star } from "lucide-react";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import markers from '../pizzaz/markers.json';
+import { PlusCircle, Star } from 'lucide-react';
 
 function App() {
   const places = markers?.places || [];
@@ -14,7 +14,7 @@ function App() {
             className="sm:w-18 w-16 aspect-square rounded-xl bg-cover bg-center"
             style={{
               backgroundImage:
-                "url(https://persistent.oaistatic.com/pizzaz/title.png)",
+                'url(https://persistent.oaistatic.com/pizzaz/title.png)',
             }}
           ></div>
           <div>
@@ -43,7 +43,7 @@ function App() {
               <div
                 style={{
                   borderBottom:
-                    i === 7 - 1 ? "none" : "1px solid rgba(0, 0, 0, 0.05)",
+                    i === 7 - 1 ? 'none' : '1px solid rgba(0, 0, 0, 0.05)',
                 }}
                 className="flex w-full items-center hover:border-black/0! gap-2"
               >
@@ -74,14 +74,14 @@ function App() {
                           </span>
                         </div>
                         <div className="whitespace-nowrap sm:hidden">
-                          {place.city || "–"}
+                          {place.city || '–'}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="hidden sm:block text-end py-2 px-3 text-sm text-black/60 whitespace-nowrap flex-auto">
-                  {place.city || "–"}
+                  {place.city || '–'}
                 </div>
                 <div className="py-2 whitespace-nowrap flex justify-end">
                   <PlusCircle strokeWidth={1.5} className="h-5 w-5" />
@@ -108,4 +108,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("pizzaz-list-root")).render(<App />);
+createRoot(document.getElementById('pizzaz-list-root')).render(<App />);

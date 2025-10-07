@@ -4,7 +4,7 @@ export type WidgetState = UnknownObject;
 
 export type SetWidgetState = (state: WidgetState) => Promise<void>;
 
-export type Theme = "light" | "dark";
+export type Theme = 'light' | 'dark';
 
 export type SafeAreaInsets = {
   top: number;
@@ -53,7 +53,7 @@ type API = {
 };
 
 /** Display mode */
-export type DisplayMode = "pip" | "inline" | "fullscreen";
+export type DisplayMode = 'pip' | 'inline' | 'fullscreen';
 export type RequestDisplayMode = (args: { mode: DisplayMode }) => Promise<{
   /**
    * The granted display mode. The host may reject the request.
@@ -73,7 +73,7 @@ export type CallTool = (
 ) => Promise<CallToolResponse>;
 
 // Subest of the the params for sampling/createMessage
-export type ModelHintName = "thinking-none" | "thinking-low" | "thinking-high";
+export type ModelHintName = 'thinking-none' | 'thinking-low' | 'thinking-high';
 
 export type CompletionStreamOptions = {
   systemPrompt?: string | null;
@@ -81,19 +81,19 @@ export type CompletionStreamOptions = {
 };
 
 export type Annotations = {
-  audience?: ("user" | "assistant")[] | null;
+  audience?: ('user' | 'assistant')[] | null;
   priority?: number | null;
 };
 
 export type TextContent = {
-  type: "text";
+  type: 'text';
   text: string;
   annotations?: Annotations | null;
   _meta?: Record<string, never> | null;
 };
 
 export type ImageContent = {
-  type: "image";
+  type: 'image';
   data: string;
   mimeType: string;
   annotations?: Annotations | null;
@@ -101,7 +101,7 @@ export type ImageContent = {
 };
 
 export type AudioContent = {
-  type: "audio";
+  type: 'audio';
   data: string;
   mimeType: string;
   annotations?: Annotations | null;
@@ -109,7 +109,7 @@ export type AudioContent = {
 };
 
 export type SamplingMessage = {
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: TextContent | ImageContent | AudioContent;
 };
 
@@ -131,7 +131,7 @@ export type CreateMessageRequestParams = {
 export type CreateMessageResponse = {
   content: TextContent | ImageContent | AudioContent;
   model: string;
-  role: "assistant";
+  role: 'assistant';
   stopReason?: string;
 };
 
@@ -147,14 +147,14 @@ export type CallCompletion = (
 export type SendFollowUpMessage = (args: { prompt: string }) => Promise<void>;
 
 /** Extra events */
-export const SET_GLOBALS_EVENT_TYPE = "webplus:set_globals";
+export const SET_GLOBALS_EVENT_TYPE = 'webplus:set_globals';
 export class SetGlobalsEvent extends CustomEvent<{
   globals: Partial<WebplusGlobals>;
 }> {
   readonly type = SET_GLOBALS_EVENT_TYPE;
 }
 
-export const TOOL_RESPONSE_EVENT_TYPE = "webplus:tool_response";
+export const TOOL_RESPONSE_EVENT_TYPE = 'webplus:tool_response';
 export class ToolResponseEvent extends CustomEvent<{
   tool: { name: string; args: UnknownObject };
 }> {

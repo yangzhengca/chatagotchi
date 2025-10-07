@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default function FilmStrip({ album, selectedIndex, onSelect }) {
   return (
@@ -9,10 +9,10 @@ export default function FilmStrip({ album, selectedIndex, onSelect }) {
           type="button"
           onClick={() => onSelect?.(idx)}
           className={
-            "block w-full p-[1px] pointer-events-auto rounded-[10px] cursor-pointer border transition-colors transition-opacity " +
+            'block w-full p-[1px] pointer-events-auto rounded-[10px] cursor-pointer border transition-colors transition-opacity ' +
             (idx === selectedIndex
-              ? "border-black"
-              : "border-black/0 hover:border-black/30 opacity-60 hover:opacity-100")
+              ? 'border-black'
+              : 'border-black/0 hover:border-black/30 opacity-60 hover:opacity-100')
           }
         >
           <div className="aspect-[5/3] rounded-lg overflow-hidden w-full">
