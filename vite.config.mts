@@ -27,10 +27,11 @@ export default defineConfig(({}) => ({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        pizzaz: resolve(__dirname, 'src/pizzaz/index.html'),
-        pizzaz_albums: resolve(__dirname, 'src/pizzaz-albums/index.html'),
-        pizzaz_carousel: resolve(__dirname, 'src/pizzaz-carousel/index.html'),
-        pizzaz_list: resolve(__dirname, 'src/pizzaz-list/index.html'),
+        // pizzaz: resolve(__dirname, 'src/pizzaz/index.html'),
+        // pizzaz_albums: resolve(__dirname, 'src/pizzaz-albums/index.html'),
+        // pizzaz_carousel: resolve(__dirname, 'src/pizzaz-carousel/index.html'),
+        // pizzaz_list: resolve(__dirname, 'src/pizzaz-list/index.html'),
+        pet: resolve(__dirname, 'src/pet/index.html'),
       },
       preserveEntrySignatures: 'strict',
     },

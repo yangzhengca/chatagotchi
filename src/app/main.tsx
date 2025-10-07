@@ -27,6 +27,9 @@ if (import.meta.env.DEV) {
         <li>
           <a href="/src/pizzaz-list/">🔗 Pizzaz List</a>
         </li>
+        <li>
+          <a href="/src/pet/">🔗 Pet</a>
+        </li>
       </ul>
     </div>
   );
