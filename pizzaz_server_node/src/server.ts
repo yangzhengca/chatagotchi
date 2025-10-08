@@ -178,7 +178,7 @@ export function getServer(): McpServer {
         'openai/widgetAccessible': true,
       },
     },
-    async (_, { authInfo }) => {
+    async ({ authInfo }) => {
       const userId = getUserId(authInfo);
       let petState = await getPetState(userId);
 
