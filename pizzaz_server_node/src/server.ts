@@ -8,6 +8,7 @@ type PetLifecycleState = 'BABY' | 'CHILD' | 'ADULT' | 'DEAD' | 'COMPLETE';
 
 interface PetState {
   state: PetLifecycleState;
+  name: string;
   hunger: number; // 0-100
   happiness: number; // 0-100
   bornAt: string; // ISO timestamp
@@ -39,12 +40,13 @@ async function savePetState(userId: string, petState: PetState): Promise<void> {
   });
 }
 
-function createInitialPetState(): PetState {
+function createInitialPetState(name: string): PetState {
   const now = new Date().toISOString();
   return {
     state: 'BABY',
-    hunger: 100,
-    happiness: 100,
+    name: name,
+    hunger: 30,
+    happiness: 30,
     bornAt: now,
     lastUpdate: now,
   };
@@ -141,6 +143,11 @@ export function getServer(): McpServer {
       inputSchema: { name: z.string() },
     },
     async ({ name }, { authInfo }) => {
+      const userId = getUserId(authInfo);
+
+      const petState = createInitialPetState(name);
+      await savePetState(userId, petState);
+
       return {
         content: [
           {
@@ -149,8 +156,7 @@ export function getServer(): McpServer {
           },
         ],
         structuredContent: {
-          petStatus: 'HUNGRY',
-          authInfo,
+          petState,
         },
       };
     }
@@ -243,7 +249,6 @@ export function getServer(): McpServer {
           ],
           structuredContent: {
             petState,
-            authInfo,
           },
         };
       }
@@ -267,7 +272,6 @@ export function getServer(): McpServer {
         ],
         structuredContent: {
           petState,
-          authInfo,
         },
       };
     }
