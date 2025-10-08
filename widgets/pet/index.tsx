@@ -1,5 +1,5 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
+import '../index.css';
 
 function App() {
   return (
@@ -11,4 +11,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('pet-root')).render(<App />);
+createRoot(document.getElementById('pet-root')!).render(<App />);

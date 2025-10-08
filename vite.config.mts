@@ -13,7 +13,7 @@ export default defineConfig(({}) => ({
     {
       name: 'widget-html-middleware',
       configureServer(server) {
-        server.middlewares.use((req, res, next) => {
+        server.middlewares.use((req, _res, next) => {
           if (req.url?.startsWith('/widgets/') && !req.url.includes('.')) {
             req.url = req.url.replace(/\/?$/, '/index.html');
           }
@@ -45,10 +45,6 @@ export default defineConfig(({}) => ({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        // pizzaz: resolve(__dirname, 'src/pizzaz/index.html'),
-        // pizzaz_albums: resolve(__dirname, 'src/pizzaz-albums/index.html'),
-        // pizzaz_carousel: resolve(__dirname, 'src/pizzaz-carousel/index.html'),
-        // pizzaz_list: resolve(__dirname, 'src/pizzaz-list/index.html'),
         pet: resolve(__dirname, 'widgets/pet/index.html'),
       },
       preserveEntrySignatures: 'strict',
