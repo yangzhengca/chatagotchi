@@ -15,11 +15,10 @@ function App() {
   const input = useOpenAiGlobal('toolInput');
   const output = useOpenAiGlobal('toolOutput');
 
-  const petState = output?.petState as PetState | undefined;
-  const action = input?.action as string | undefined;
-
-  // Show action feedback
-  const actionEmoji = action === 'feed' ? '🍔' : action === 'play' ? '🎮' : null;
+  const petState = output?.petState as PetState | undefined | null;
+  const lastAction = output?.lastAction as
+    | { type: 'food' | 'play'; emoji: string }
+    | undefined;
 
   return (
     <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white">
@@ -29,8 +28,8 @@ function App() {
           <div className="text-8xl">
             {petState ? PET_EMOJIS[petState.state] : '❓'}
           </div>
-          {actionEmoji && (
-            <div className="text-4xl animate-bounce">{actionEmoji}</div>
+          {lastAction && (
+            <div className="text-4xl animate-bounce">{lastAction.emoji}</div>
           )}
         </div>
 
@@ -39,7 +38,9 @@ function App() {
           <div className="w-full space-y-3">
             <div className="text-center">
               <div className="text-2xl font-bold">{petState.name}</div>
-              <div className="text-sm text-gray-600">{petState.state}</div>
+              <div className="text-sm text-gray-600">
+                {petState.state} • Turn {petState.turn}/6
+              </div>
             </div>
 
             {/* Stats */}
@@ -67,7 +68,9 @@ function App() {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>😊 Happiness</span>
-                    <span className="font-mono">{Math.round(petState.happiness)}</span>
+                    <span className="font-mono">
+                      {Math.round(petState.happiness)}
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -82,21 +85,44 @@ function App() {
                     />
                   </div>
                 </div>
+
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>❤️ Health</span>
+                    <span className="font-mono">{Math.round(petState.health)}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        petState.health > 50
+                          ? 'bg-pink-500'
+                          : petState.health > 20
+                            ? 'bg-yellow-500'
+                            : 'bg-red-500'
+                      }`}
+                      style={{ width: `${petState.health}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Game Over Messages */}
             {petState.state === 'DEAD' && (
-              <div className="text-center p-4 bg-red-100 rounded-lg">
+              <div className="text-center p-4 bg-red-100 rounded-lg border-2 border-red-300">
+                <div className="text-2xl mb-2">💀</div>
                 <div className="text-lg font-bold">Game Over</div>
-                <div className="text-sm">Your pet has died from neglect</div>
+                <div className="text-sm mt-1">{petState.deathReason}</div>
               </div>
             )}
 
             {petState.state === 'COMPLETE' && (
-              <div className="text-center p-4 bg-yellow-100 rounded-lg">
+              <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
+                <div className="text-2xl mb-2">🏆</div>
                 <div className="text-lg font-bold">Congratulations!</div>
-                <div className="text-sm">Your pet has grown up successfully!</div>
+                <div className="text-sm mt-1">
+                  {petState.name} has grown up successfully!
+                </div>
               </div>
             )}
           </div>
@@ -108,6 +134,22 @@ function App() {
             <div className="text-xs">Start a new game to get started</div>
           </div>
         )}
+
+        {/* Debug Info */}
+        <div className="w-full space-y-1 text-[10px] opacity-50">
+          <div>
+            <div className="font-semibold">Input:</div>
+            <pre className="bg-gray-100 p-1 rounded overflow-auto text-[9px]">
+              {JSON.stringify(input, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <div className="font-semibold">Output:</div>
+            <pre className="bg-gray-100 p-1 rounded overflow-auto text-[9px]">
+              {JSON.stringify(output, null, 2)}
+            </pre>
+          </div>
+        </div>
       </div>
     </div>
   );
