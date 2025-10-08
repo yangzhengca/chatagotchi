@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
+import { z } from 'zod';
 
 export function getServer(): McpServer {
   const server = new McpServer({
@@ -22,6 +23,36 @@ export function getServer(): McpServer {
       ],
     };
   });
+
+  server.registerTool(
+    'new-game',
+    {
+      title: 'Start a new game',
+      description:
+        'Kicks off a new game with a brand new pet. Be sure to name them!',
+      _meta: {
+        'openai/outputTemplate': 'ui://widget/pet.html',
+        'openai/toolInvocation/invoking': 'Waking up your new pet',
+        'openai/toolInvocation/invoked': 'Say hello to your new pet!',
+        'openai/widgetAccessible': true,
+      },
+      inputSchema: { name: z.string() },
+    },
+    async ({ name }, { authInfo }) => {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Say hello to ${name}`,
+          },
+        ],
+        structuredContent: {
+          petStatus: 'HUNGRY',
+          authInfo,
+        },
+      };
+    }
+  );
 
   server.registerTool(
     'pet-status',
