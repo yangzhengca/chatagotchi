@@ -3,7 +3,7 @@
   "outputDirectory": "assets",
   "rewrites": [
     {
-      "source": "/:path((?!src)(?!.*\\.).*)",
+      "source": "/:path((?!widgets)(?!.*\\.).*)",
       "destination": "/index.html"
     }
   ]

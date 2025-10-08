@@ -7,11 +7,29 @@ import tailwindcss from '@tailwindcss/vite';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({}) => ({
-  plugins: [tailwindcss(), react()],
+  plugins: [
+    tailwindcss(),
+    react(),
+    {
+      name: 'widget-html-middleware',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.startsWith('/widgets/') && !req.url.includes('.')) {
+            req.url = req.url.replace(/\/?$/, '/index.html');
+          }
+          next();
+        });
+      },
+    },
+  ],
   server: {
     port: 4444,
     strictPort: true,
     cors: true,
+    open: false,
+    fs: {
+      strict: false,
+    },
   },
   esbuild: {
     jsx: 'automatic',
@@ -31,7 +49,7 @@ export default defineConfig(({}) => ({
         // pizzaz_albums: resolve(__dirname, 'src/pizzaz-albums/index.html'),
         // pizzaz_carousel: resolve(__dirname, 'src/pizzaz-carousel/index.html'),
         // pizzaz_list: resolve(__dirname, 'src/pizzaz-list/index.html'),
-        pet: resolve(__dirname, 'src/pet/index.html'),
+        pet: resolve(__dirname, 'widgets/pet/index.html'),
       },
       preserveEntrySignatures: 'strict',
       output: {
