@@ -34,6 +34,11 @@ export default defineConfig(({}) => ({
         pet: resolve(__dirname, 'src/pet/index.html'),
       },
       preserveEntrySignatures: 'strict',
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+        assetFileNames: '[name].[ext]',
+      },
     },
   },
 }));
