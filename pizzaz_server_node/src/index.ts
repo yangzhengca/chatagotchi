@@ -25,15 +25,15 @@ app.use(
     scopes_supported: ['openid', 'email', 'profile'],
   }))
 );
-//
-// app.use(
-//   '/.well-known/oauth-authorization-server',
-//   metadataHandler(async () =>
-//     fetch(new URL('/.well-known/oauth-authorization-server', authDomain)).then(
-//       (res) => res.json()
-//     )
-//   )
-// );
+
+app.use(
+  '/.well-known/oauth-authorization-server',
+  metadataHandler(async () =>
+    fetch(new URL('/.well-known/oauth-authorization-server', authDomain)).then(
+      (res) => res.json()
+    )
+  )
+);
 
 const bearerAuthMiddleware = requireBearerAuth({
   verifier: {
