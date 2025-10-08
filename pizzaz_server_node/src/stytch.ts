@@ -1,5 +1,5 @@
-import { Client } from "stytch";
-import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
+import { Client } from 'stytch';
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 
 let client: Client | null = null;
 
@@ -15,23 +15,27 @@ function getClient(): Client {
 }
 
 export const stytchVerifier = async (token: string): Promise<AuthInfo> => {
+  console.log('Token is being verified', typeof token);
   try {
-    const { audience, scope, expires_at, ...rest } = await getClient().idp.introspectTokenLocal(token);
+    const { audience, scope, expires_at, ...rest } =
+      await getClient().idp.introspectTokenLocal(token);
     return {
       token,
       clientId: audience as string,
-      scopes: scope.split(" "),
+      scopes: scope.split(' '),
       expiresAt: expires_at,
       extra: rest,
     } satisfies AuthInfo;
   } catch (error) {
-    console.error('FAILED AUTH')
+    console.error('FAILED AUTH');
     console.error(error);
-    throw error
+    throw error;
   }
 };
 
-export async function getUserTrustedMetadata(userId: string): Promise<Record<string, unknown>> {
+export async function getUserTrustedMetadata(
+  userId: string
+): Promise<Record<string, unknown>> {
   try {
     const response = await getClient().users.get({ user_id: userId });
     return response.trusted_metadata || {};

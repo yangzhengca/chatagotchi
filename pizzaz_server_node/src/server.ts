@@ -101,6 +101,7 @@ function updatePetState(petState: PetState): PetState {
 
 function getUserId(authInfo?: AuthInfo): string {
   if (!authInfo || !authInfo.extra || typeof authInfo.extra.sub !== 'string') {
+    console.error('Auth info was', authInfo);
     throw Error('Auth Info missing');
   }
   return authInfo.extra.sub;
