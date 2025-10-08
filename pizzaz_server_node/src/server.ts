@@ -1,4 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 
 export function getServer(): McpServer {
   const server = new McpServer({
@@ -33,7 +34,7 @@ export function getServer(): McpServer {
         'openai/widgetAccessible': true,
       },
     },
-    async () => {
+    async (_, { authInfo }) => {
       return {
         content: [
           {
@@ -43,6 +44,7 @@ export function getServer(): McpServer {
         ],
         structuredContent: {
           petStatus: 'HUNGRY',
+          authInfo,
         },
       };
     }

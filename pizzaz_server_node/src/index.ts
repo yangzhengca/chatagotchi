@@ -1,11 +1,46 @@
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { requireBearerAuth } from '@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js';
 import express, { type Request, type Response } from 'express';
 
 import { getServer } from './server.js';
 import { config } from './config.js';
+import { stytchVerifier } from './stytch.js';
+import { metadataHandler } from './metadata.js';
 
 const app = express();
 app.use(express.json());
+
+const authDomain = process.env.STYTCH_DOMAIN;
+if (!authDomain) {
+  throw new Error(
+    'Missing auth domain. Ensure STYTCH_DOMAIN env variable is set.'
+  );
+}
+
+app.use(
+  '/.well-known/oauth-protected-resource',
+  metadataHandler(async () => ({
+    resource: new URL('http://localhost:3000').href,
+    authorization_servers: [authDomain],
+    scopes_supported: ['openid', 'email', 'profile'],
+  }))
+);
+
+app.use(
+  '/.well-known/oauth-authorization-server',
+  metadataHandler(async () =>
+    fetch(new URL('/.well-known/oauth-authorization-server', authDomain)).then(
+      (res) => res.json()
+    )
+  )
+);
+
+const bearerAuthMiddleware = requireBearerAuth({
+  verifier: {
+    verifyAccessToken: stytchVerifier,
+  },
+  resourceMetadataUrl: 'http://localhost:3000',
+});
 
 app.post('/mcp', async (req: Request, res: Response) => {
   try {
