@@ -25,15 +25,15 @@ app.use(
     scopes_supported: ['openid', 'email', 'profile'],
   }))
 );
-
-app.use(
-  '/.well-known/oauth-authorization-server',
-  metadataHandler(async () =>
-    fetch(new URL('/.well-known/oauth-authorization-server', authDomain)).then(
-      (res) => res.json()
-    )
-  )
-);
+//
+// app.use(
+//   '/.well-known/oauth-authorization-server',
+//   metadataHandler(async () =>
+//     fetch(new URL('/.well-known/oauth-authorization-server', authDomain)).then(
+//       (res) => res.json()
+//     )
+//   )
+// );
 
 const bearerAuthMiddleware = requireBearerAuth({
   verifier: {
@@ -42,7 +42,7 @@ const bearerAuthMiddleware = requireBearerAuth({
   resourceMetadataUrl: 'http://localhost:3000',
 });
 
-app.post('/mcp', async (req: Request, res: Response) => {
+app.post('/mcp', bearerAuthMiddleware, async (req: Request, res: Response) => {
   try {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
@@ -71,7 +71,7 @@ app.post('/mcp', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/mcp', async (req: Request, res: Response) => {
+app.get('/mcp', bearerAuthMiddleware, async (req: Request, res: Response) => {
   console.log('Received GET MCP request');
   res.writeHead(405).end(
     JSON.stringify({
@@ -85,19 +85,23 @@ app.get('/mcp', async (req: Request, res: Response) => {
   );
 });
 
-app.delete('/mcp', async (req: Request, res: Response) => {
-  console.log('Received GET MCP request');
-  res.writeHead(405).end(
-    JSON.stringify({
-      jsonrpc: '2.0',
-      error: {
-        code: -32000,
-        message: 'Method not allowed.',
-      },
-      id: null,
-    })
-  );
-});
+app.delete(
+  '/mcp',
+  bearerAuthMiddleware,
+  async (req: Request, res: Response) => {
+    console.log('Received GET MCP request');
+    res.writeHead(405).end(
+      JSON.stringify({
+        jsonrpc: '2.0',
+        error: {
+          code: -32000,
+          message: 'Method not allowed.',
+        },
+        id: null,
+      })
+    );
+  }
+);
 
 app.listen(config.MCP_HTTP_PORT, () => {
   console.log(
