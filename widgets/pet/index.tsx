@@ -42,7 +42,11 @@ function App() {
     <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white relative">
       {/* Fullscreen Button */}
       <button
-        onClick={() => window.openai.callTool('achievements', {})}
+        onClick={() =>
+          window.openai.sendFollowUpMessage({
+            prompt: 'Show me my achievements so far',
+          })
+        }
         className="absolute top-2 right-2 p-2 text-xl hover:bg-gray-100 rounded-lg transition-colors"
       >
         Achievements ✨
