@@ -1,15 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import '../index.css';
 import { useOpenAiGlobal } from '../utils/use-openai-global.ts';
-import type { PetState } from './types';
-
-const PET_EMOJIS = {
-  BABY: '🐣',
-  CHILD: '🐥',
-  ADULT: '🐔',
-  DEAD: '💀',
-  COMPLETE: '🏆',
-};
+import { PetState, SPECIES_EMOJIS } from './types';
 
 function App() {
   const input = useOpenAiGlobal('toolInput');
@@ -20,13 +12,17 @@ function App() {
     | { type: 'food' | 'play'; emoji: string }
     | undefined;
 
+  const petEmoji = petState
+    ? SPECIES_EMOJIS[petState.species][petState.state]
+    : '❓';
+
   return (
     <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white">
       <div className="flex flex-col items-center justify-center gap-4">
         {/* Pet Display */}
         <div className="flex items-center gap-2">
           <div className="text-8xl">
-            {petState ? PET_EMOJIS[petState.state] : '❓'}
+            {petEmoji}
           </div>
           {lastAction && (
             <div className="text-4xl animate-bounce">{lastAction.emoji}</div>
