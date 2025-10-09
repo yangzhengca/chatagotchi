@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import '../index.css';
+import './index.css';
 import { useOpenAiGlobal } from '../utils/use-openai-global.ts';
 import { Achievement } from './types';
 
@@ -28,7 +28,8 @@ function App() {
     );
   }
 
-  const achievements = (output?.achievements as Achievement[] | undefined) || [];
+  const achievements =
+    (output?.achievements as Achievement[] | undefined) || [];
   const unlockedAchievements =
     (output?.unlockedAchievements as string[] | undefined) || [];
   const unlockedSet = new Set(unlockedAchievements);

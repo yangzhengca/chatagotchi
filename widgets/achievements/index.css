@@ -1,4 +1,4 @@
-@import 'tailwindcss' source('../widgets');
+@import 'tailwindcss' source('.');
 
 @tailwind base;
 @tailwind components;

@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import '../index.css';
+import './index.css';
 import { useOpenAiGlobal } from '../utils/use-openai-global.ts';
 import { PetState, SPECIES_EMOJIS } from './types';
 
