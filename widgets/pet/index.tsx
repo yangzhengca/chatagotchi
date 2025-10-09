@@ -7,6 +7,22 @@ function App() {
   const input = useOpenAiGlobal('toolInput');
   const output = useOpenAiGlobal('toolOutput');
 
+  // Show loading state when output is null
+  if (output === null) {
+    return (
+      <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white">
+        <div className="flex flex-col items-center justify-center gap-4 min-h-[300px]">
+          <div className="text-6xl flex items-center gap-1">
+            <span className="animate-pulse">⏳</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>•</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.4s' }}>•</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.6s' }}>•</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const petState = output?.petState as PetState | undefined | null;
   const lastAction = output?.lastAction as
     | { type: 'food' | 'play'; emoji: string }
@@ -21,9 +37,7 @@ function App() {
       <div className="flex flex-col items-center justify-center gap-4">
         {/* Pet Display */}
         <div className="flex items-center gap-2">
-          <div className="text-8xl">
-            {petEmoji}
-          </div>
+          <div className="text-8xl">{petEmoji}</div>
           {lastAction && (
             <div className="text-4xl animate-bounce">{lastAction.emoji}</div>
           )}
@@ -45,7 +59,9 @@ function App() {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>🍔 Hunger</span>
-                    <span className="font-mono">{Math.round(petState.hunger)}</span>
+                    <span className="font-mono">
+                      {Math.round(petState.hunger)}
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -85,7 +101,9 @@ function App() {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>❤️ Health</span>
-                    <span className="font-mono">{Math.round(petState.health)}</span>
+                    <span className="font-mono">
+                      {Math.round(petState.health)}
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
