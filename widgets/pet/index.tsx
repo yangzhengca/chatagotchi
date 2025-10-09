@@ -42,10 +42,10 @@ function App() {
     <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white relative">
       {/* Fullscreen Button */}
       <button
-        onClick={() => window.openai.requestDisplayMode({ mode: 'pip' })}
+        onClick={() => window.openai.callTool('achievements', {})}
         className="absolute top-2 right-2 p-2 text-xl hover:bg-gray-100 rounded-lg transition-colors"
       >
-        PIP
+        Achievements ✨
       </button>
 
       <div className="flex flex-col items-center justify-center gap-4">
@@ -63,7 +63,7 @@ function App() {
             <div className="text-center">
               <div className="text-2xl font-bold">{petState.name}</div>
               <div className="text-sm text-gray-600">
-                {petState.state} • Turn {petState.turn}/6
+                {petState.state} • Turn {petState.turn}
               </div>
             </div>
 

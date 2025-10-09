@@ -4,9 +4,13 @@ import { z } from 'zod';
 import { getUserTrustedMetadata, updateUserTrustedMetadata } from './stytch.js';
 import {
   type PetState,
+  type AchievementState,
   createInitialPetState,
   applyFoodAction,
   applyPlayAction,
+  checkAchievements,
+  createInitialAchievementState,
+  ACHIEVEMENTS,
 } from './game-logic.js';
 
 async function getPetState(userId: string): Promise<PetState | null> {
@@ -20,6 +24,25 @@ async function savePetState(userId: string, petState: PetState): Promise<void> {
   await updateUserTrustedMetadata(userId, {
     ...metadata,
     petState,
+  });
+}
+
+async function getAchievementState(userId: string): Promise<AchievementState> {
+  const metadata = await getUserTrustedMetadata(userId);
+  const achievementState = metadata.achievementState as
+    | AchievementState
+    | undefined;
+  return achievementState || createInitialAchievementState();
+}
+
+async function saveAchievementState(
+  userId: string,
+  achievementState: AchievementState
+): Promise<void> {
+  const metadata = await getUserTrustedMetadata(userId);
+  await updateUserTrustedMetadata(userId, {
+    ...metadata,
+    achievementState,
   });
 }
 
@@ -152,12 +175,43 @@ export function getServer(): McpServer {
       petState = applyFoodAction(petState, food);
       await savePetState(userId, petState);
 
+      // Check for achievement unlocks
+      const achievementState = await getAchievementState(userId);
+      const newAchievements = checkAchievements(petState, achievementState);
+      if (newAchievements.length > 0) {
+        achievementState.unlockedAchievements.push(...newAchievements);
+        await saveAchievementState(userId, achievementState);
+      }
+
       if (petState.state === 'DEAD') {
+        const achievementText =
+          newAchievements.length > 0
+            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
+            : '';
         return {
           content: [
             {
               type: 'text',
-              text: `Oh no! ${petState.deathReason}`,
+              text: `Oh no! ${petState.deathReason}${achievementText}`,
+            },
+          ],
+          structuredContent: {
+            petState,
+            lastAction: { type: 'food', emoji: food },
+          },
+        };
+      }
+
+      if (petState.state === 'COMPLETE') {
+        const achievementText =
+          newAchievements.length > 0
+            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
+            : '';
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Congratulations! ${petState.name} has grown up!${achievementText}`,
             },
           ],
           structuredContent: {
@@ -227,12 +281,43 @@ export function getServer(): McpServer {
       petState = applyPlayAction(petState, activity);
       await savePetState(userId, petState);
 
+      // Check for achievement unlocks
+      const achievementState = await getAchievementState(userId);
+      const newAchievements = checkAchievements(petState, achievementState);
+      if (newAchievements.length > 0) {
+        achievementState.unlockedAchievements.push(...newAchievements);
+        await saveAchievementState(userId, achievementState);
+      }
+
       if (petState.state === 'DEAD') {
+        const achievementText =
+          newAchievements.length > 0
+            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
+            : '';
         return {
           content: [
             {
               type: 'text',
-              text: `Oh no! ${petState.deathReason}`,
+              text: `Oh no! ${petState.deathReason}${achievementText}`,
+            },
+          ],
+          structuredContent: {
+            petState,
+            lastAction: { type: 'play', emoji: activity },
+          },
+        };
+      }
+
+      if (petState.state === 'COMPLETE') {
+        const achievementText =
+          newAchievements.length > 0
+            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
+            : '';
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Congratulations! ${petState.name} has grown up!${achievementText}`,
             },
           ],
           structuredContent: {
@@ -252,6 +337,66 @@ export function getServer(): McpServer {
         structuredContent: {
           petState,
           lastAction: { type: 'play', emoji: activity },
+        },
+      };
+    }
+  );
+
+  server.registerResource(
+    'achievements-widget',
+    'ui://widget/achievements.html',
+    {},
+    () => {
+      return {
+        contents: [
+          {
+            uri: 'ui://widget/achievements.html',
+            mimeType: 'text/html+skybridge',
+            text: `
+            <div id="achievements-root"></div>
+            <link rel="stylesheet" href="https://chatagotchi-jet.vercel.app/achievements.css">
+            <script type="module" src="https://chatagotchi-jet.vercel.app/achievements.js"></script>
+          `.trim(),
+            _meta: {
+              'openai/widgetDescription':
+                "Renders a micro-UI showing the user's achievements.",
+            },
+          },
+        ],
+      };
+    }
+  );
+
+  server.registerTool(
+    'achievements',
+    {
+      title: 'View Achievements',
+      description: 'View all your unlocked and locked achievements',
+      _meta: {
+        'openai/outputTemplate': 'ui://widget/achievements.html',
+        'openai/toolInvocation/invoking': 'Loading your achievements',
+        'openai/toolInvocation/invoked': 'Here are your achievements!',
+        'openai/widgetAccessible': true,
+      },
+      inputSchema: {},
+    },
+    async (_input, { authInfo }) => {
+      const userId = getUserId(authInfo);
+      const achievementState = await getAchievementState(userId);
+
+      const unlockedCount = achievementState.unlockedAchievements.length;
+      const totalCount = ACHIEVEMENTS.length;
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `You've unlocked ${unlockedCount} out of ${totalCount} achievements!`,
+          },
+        ],
+        structuredContent: {
+          achievements: ACHIEVEMENTS,
+          unlockedAchievements: achievementState.unlockedAchievements,
         },
       };
     }

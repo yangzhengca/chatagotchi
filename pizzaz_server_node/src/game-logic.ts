@@ -1,19 +1,108 @@
 // Pet state types
-export type PetLifecycleState = 'BABY' | 'CHILD' | 'ADULT' | 'DEAD' | 'COMPLETE';
+export type PetLifecycleState =
+  | 'BABY'
+  | 'CHILD'
+  | 'ADULT'
+  | 'DEAD'
+  | 'COMPLETE';
 export type PetSpecies = 'bird' | 'cat' | 'dog' | 'lizard' | 'fish';
 
 export interface PetState {
   state: PetLifecycleState;
   species: PetSpecies;
   name: string;
-  hunger: number; // 0-100
+  stamina: number; // 0-100
   happiness: number; // 0-100
   health: number; // 0-100
   turn: number;
   deathReason?: string;
 }
 
-export const SPECIES_EMOJIS: Record<PetSpecies, Record<PetLifecycleState, string>> = {
+// Achievement types
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  emoji: string;
+}
+
+export interface AchievementState {
+  unlockedAchievements: string[];
+}
+
+export const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: 'species_bird',
+    title: 'Bird Whisperer',
+    description: 'Raise a bird to adulthood',
+    emoji: '🐔',
+  },
+  {
+    id: 'species_cat',
+    title: 'Cat Person',
+    description: 'Raise a cat to adulthood',
+    emoji: '🐯',
+  },
+  {
+    id: 'species_dog',
+    title: 'Dog Lover',
+    description: 'Raise a dog to adulthood',
+    emoji: '🐺',
+  },
+  {
+    id: 'species_lizard',
+    title: 'Dragon Tamer',
+    description: 'Raise a lizard to adulthood',
+    emoji: '🐉',
+  },
+  {
+    id: 'species_fish',
+    title: 'Marine Biologist',
+    description: 'Raise a fish to adulthood',
+    emoji: '🦈',
+  },
+  {
+    id: 'death_starved',
+    title: 'Hunger Strike',
+    description: 'Experience death by starvation',
+    emoji: '🍽️',
+  },
+  {
+    id: 'death_sadness',
+    title: 'Heartbreak',
+    description: 'Experience death by sadness',
+    emoji: '😢',
+  },
+  {
+    id: 'death_health',
+    title: 'Medical Mystery',
+    description: 'Experience death by poor health',
+    emoji: '🏥',
+  },
+  {
+    id: 'death_skiing',
+    title: 'Tree Hugger',
+    description: 'Discover the skiing accident',
+    emoji: '🎿',
+  },
+  {
+    id: 'death_overeating',
+    title: 'Glutton',
+    description: 'Discover death by overeating',
+    emoji: '🍕',
+  },
+  {
+    id: 'death_baby_skiing',
+    title: 'Bad Parenting',
+    description: 'Take a baby skiing',
+    emoji: '👶',
+  },
+];
+
+export const SPECIES_EMOJIS: Record<
+  PetSpecies,
+  Record<PetLifecycleState, string>
+> = {
   bird: {
     BABY: '🐣',
     CHILD: '🐥',
@@ -58,33 +147,34 @@ const OVERFED_THRESHOLD = 120;
 
 const FOOD_EFFECTS: Record<
   string,
-  { hunger: number; happiness: number; health: number }
+  { stamina: number; happiness: number; health: number }
 > = {
-  '🍎': { hunger: 25, happiness: 5, health: 15 },
-  '🍪': { hunger: 20, happiness: 20, health: -10 },
-  '🥗': { hunger: 15, happiness: -5, health: 25 },
-  '🍕': { hunger: 30, happiness: 15, health: -5 },
+  '🍎': { stamina: 5, happiness: 0, health: 5 },
+  '🍪': { stamina: 5, happiness: 10, health: -10 },
+  '🥗': { stamina: 15, happiness: -10, health: 15 },
+  '🍕': { stamina: 30, happiness: 20, health: -15 },
 };
 
 const PLAY_EFFECTS: Record<
   string,
-  { hunger: number; happiness: number; health: number }
+  { stamina: number; happiness: number; health: number }
 > = {
-  '🎮': { hunger: -5, happiness: 25, health: -10 },
-  '🏃': { hunger: -15, happiness: 10, health: 25 },
-  '🎿': { hunger: -20, happiness: 30, health: 15 },
+  '🎮': { stamina: -5, happiness: 25, health: -10 },
+  '🏃': { stamina: -15, happiness: 10, health: 25 },
+  '🎿': { stamina: -20, happiness: 30, health: 15 },
 };
 
 export function createInitialPetState(name: string): PetState {
   // Randomly select a species
   const speciesOptions: PetSpecies[] = ['bird', 'cat', 'dog', 'lizard', 'fish'];
-  const randomSpecies = speciesOptions[Math.floor(Math.random() * speciesOptions.length)];
+  const randomSpecies =
+    speciesOptions[Math.floor(Math.random() * speciesOptions.length)];
 
   return {
     state: 'BABY',
     species: randomSpecies,
     name,
-    hunger: 50,
+    stamina: 50,
     happiness: 50,
     health: 50,
     turn: 0,
@@ -93,8 +183,8 @@ export function createInitialPetState(name: string): PetState {
 
 function getLifecycleState(turn: number): PetLifecycleState {
   if (turn <= 1) return 'BABY';
-  if (turn <= 3) return 'CHILD';
-  if (turn <= 5) return 'ADULT';
+  if (turn <= 4) return 'CHILD';
+  if (turn <= 8) return 'ADULT';
   return 'COMPLETE';
 }
 
@@ -106,7 +196,10 @@ export function applyFoodAction(petState: PetState, food: string): PetState {
   return applyAction(petState, effects, food);
 }
 
-export function applyPlayAction(petState: PetState, activity: string): PetState {
+export function applyPlayAction(
+  petState: PetState,
+  activity: string
+): PetState {
   const effects = PLAY_EFFECTS[activity];
   if (!effects) {
     throw new Error(`Unknown activity: ${activity}`);
@@ -116,7 +209,7 @@ export function applyPlayAction(petState: PetState, activity: string): PetState 
 
 function applyAction(
   petState: PetState,
-  effects: { hunger: number; happiness: number; health: number },
+  effects: { stamina: number; happiness: number; health: number },
   emoji: string
 ): PetState {
   // Check if already dead or complete
@@ -134,12 +227,12 @@ function applyAction(
   }
 
   // Apply stat changes (before clamping)
-  const newHunger = petState.hunger + effects.hunger;
+  const newStamina = petState.stamina + effects.stamina;
   const newHappiness = petState.happiness + effects.happiness;
   const newHealth = petState.health + effects.health;
 
   // Check overfed
-  if (newHunger > OVERFED_THRESHOLD) {
+  if (newStamina > OVERFED_THRESHOLD) {
     return {
       ...petState,
       state: 'DEAD',
@@ -149,7 +242,7 @@ function applyAction(
 
   // Check skiing tree crash (deterministic randomness)
   if (emoji === '🎿') {
-    const crashCheck = (petState.turn * 7 + Math.floor(petState.hunger)) % 4;
+    const crashCheck = (petState.turn * 7 + Math.floor(petState.stamina)) % 4;
     if (crashCheck === 0) {
       return {
         ...petState,
@@ -160,7 +253,7 @@ function applyAction(
   }
 
   // Clamp stats
-  const clampedHunger = Math.max(0, Math.min(MAX_STAT, newHunger));
+  const clampedStamina = Math.max(0, Math.min(MAX_STAT, newStamina));
   const clampedHappiness = Math.max(0, Math.min(MAX_STAT, newHappiness));
   const clampedHealth = Math.max(0, Math.min(MAX_STAT, newHealth));
 
@@ -168,10 +261,10 @@ function applyAction(
   const newTurn = petState.turn + 1;
 
   // Check death from low stats
-  if (clampedHunger < MIN_STAT) {
+  if (clampedStamina < MIN_STAT) {
     return {
       ...petState,
-      hunger: clampedHunger,
+      stamina: clampedStamina,
       happiness: clampedHappiness,
       health: clampedHealth,
       turn: newTurn,
@@ -182,7 +275,7 @@ function applyAction(
   if (clampedHappiness < MIN_STAT) {
     return {
       ...petState,
-      hunger: clampedHunger,
+      stamina: clampedStamina,
       happiness: clampedHappiness,
       health: clampedHealth,
       turn: newTurn,
@@ -193,7 +286,7 @@ function applyAction(
   if (clampedHealth < MIN_STAT) {
     return {
       ...petState,
-      hunger: clampedHunger,
+      stamina: clampedStamina,
       happiness: clampedHappiness,
       health: clampedHealth,
       turn: newTurn,
@@ -207,10 +300,58 @@ function applyAction(
 
   return {
     ...petState,
-    hunger: clampedHunger,
+    stamina: clampedStamina,
     happiness: clampedHappiness,
     health: clampedHealth,
     turn: newTurn,
     state: newState,
+  };
+}
+
+// Achievement detection
+export function checkAchievements(
+  petState: PetState,
+  achievementState: AchievementState
+): string[] {
+  const newAchievements: string[] = [];
+  const alreadyUnlocked = new Set(achievementState.unlockedAchievements);
+
+  // Check species achievements (only when completing)
+  if (petState.state === 'COMPLETE') {
+    const speciesAchievement = `species_${petState.species}`;
+    if (!alreadyUnlocked.has(speciesAchievement)) {
+      newAchievements.push(speciesAchievement);
+    }
+  }
+
+  // Check death achievements
+  if (petState.state === 'DEAD' && petState.deathReason) {
+    let deathAchievement: string | null = null;
+
+    if (petState.deathReason.includes('starved')) {
+      deathAchievement = 'death_starved';
+    } else if (petState.deathReason.includes('sadness')) {
+      deathAchievement = 'death_sadness';
+    } else if (petState.deathReason.includes('health')) {
+      deathAchievement = 'death_health';
+    } else if (petState.deathReason.includes('crashed into a tree')) {
+      deathAchievement = 'death_skiing';
+    } else if (petState.deathReason.includes('overeating')) {
+      deathAchievement = 'death_overeating';
+    } else if (petState.deathReason.includes("baby shouldn't be on the slopes")) {
+      deathAchievement = 'death_baby_skiing';
+    }
+
+    if (deathAchievement && !alreadyUnlocked.has(deathAchievement)) {
+      newAchievements.push(deathAchievement);
+    }
+  }
+
+  return newAchievements;
+}
+
+export function createInitialAchievementState(): AchievementState {
+  return {
+    unlockedAchievements: [],
   };
 }
