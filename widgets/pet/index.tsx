@@ -76,21 +76,21 @@ function App() {
               <div className="space-y-2">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>🍔 Hunger</span>
+                    <span>🍔 Stamina</span>
                     <span className="font-mono">
-                      {Math.round(petState.hunger)}
+                      {Math.round(petState.stamina)}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all ${
-                        petState.hunger > 50
+                        petState.stamina > 50
                           ? 'bg-green-500'
-                          : petState.hunger > 20
+                          : petState.stamina > 20
                             ? 'bg-yellow-500'
                             : 'bg-red-500'
                       }`}
-                      style={{ width: `${petState.hunger}%` }}
+                      style={{ width: `${petState.stamina}%` }}
                     />
                   </div>
                 </div>

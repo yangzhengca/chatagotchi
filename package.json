@@ -30,32 +30,13 @@
     "vite": "^7.1.1"
   },
   "dependencies": {
-    "@react-spring/three": "^10.0.1",
-    "@react-three/drei": "^10.6.1",
-    "@react-three/fiber": "^9.3.0",
-    "@react-three/postprocessing": "^3.0.4",
     "@stytch/react": "^19.12.0",
     "@stytch/vanilla-js": "^5.37.1",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
-    "clsx": "^2.1.1",
-    "embla-carousel": "^8.0.0",
-    "embla-carousel-react": "^8.0.0",
-    "framer-motion": "^12.23.12",
-    "immer": "^10.1.1",
-    "lodash": "^4.17.21",
-    "lucide-react": "^0.536.0",
-    "mapbox-gl": "^3.14.0",
-    "mapbox-gl.css": "link:mapbox-gl/dist/mapbox-gl.css",
-    "mermaid": "^11.9.0",
-    "partial-json": "^0.1.7",
     "react": "^19.1.1",
-    "react-datepicker": "^8.4.0",
-    "react-datepicker.css": "link:react-datepicker/dist/react-datepicker.css",
     "react-dom": "^19.1.1",
-    "react-intl": "^7.1.11",
     "react-router-dom": "^7.8.2",
-    "three": "^0.179.1",
     "zod": "^4.1.5"
   }
 }

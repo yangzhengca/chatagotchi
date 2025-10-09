@@ -11,14 +11,17 @@ export interface PetState {
   state: PetLifecycleState;
   species: PetSpecies;
   name: string;
-  hunger: number; // 0-100
+  stamina: number; // 0-100
   happiness: number; // 0-100
   health: number; // 0-100
   turn: number;
   deathReason?: string;
 }
 
-export const SPECIES_EMOJIS: Record<PetSpecies, Record<PetLifecycleState, string>> = {
+export const SPECIES_EMOJIS: Record<
+  PetSpecies,
+  Record<PetLifecycleState, string>
+> = {
   bird: {
     BABY: '🐣',
     CHILD: '🐥',
