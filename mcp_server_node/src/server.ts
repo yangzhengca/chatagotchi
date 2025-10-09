@@ -366,6 +366,9 @@ export function getServer(): McpServer {
         'openai/toolInvocation/invoked': 'Here are your achievements!',
         'openai/widgetAccessible': true,
       },
+      annotations: {
+        readOnlyHint: true,
+      },
       inputSchema: {},
     },
     async (_input, { authInfo }) => {
