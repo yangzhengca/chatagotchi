@@ -71,7 +71,7 @@ app.post('/mcp', bearerAuthMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-app.get('/mcp', bearerAuthMiddleware, async (req: Request, res: Response) => {
+app.get('/mcp', bearerAuthMiddleware, async (_: Request, res: Response) => {
   console.log('Received GET MCP request');
   res.writeHead(405).end(
     JSON.stringify({
@@ -85,23 +85,19 @@ app.get('/mcp', bearerAuthMiddleware, async (req: Request, res: Response) => {
   );
 });
 
-app.delete(
-  '/mcp',
-  bearerAuthMiddleware,
-  async (req: Request, res: Response) => {
-    console.log('Received GET MCP request');
-    res.writeHead(405).end(
-      JSON.stringify({
-        jsonrpc: '2.0',
-        error: {
-          code: -32000,
-          message: 'Method not allowed.',
-        },
-        id: null,
-      })
-    );
-  }
-);
+app.delete('/mcp', bearerAuthMiddleware, async (_: Request, res: Response) => {
+  console.log('Received GET MCP request');
+  res.writeHead(405).end(
+    JSON.stringify({
+      jsonrpc: '2.0',
+      error: {
+        code: -32000,
+        message: 'Method not allowed.',
+      },
+      id: null,
+    })
+  );
+});
 
 app.listen(config.MCP_HTTP_PORT, () => {
   console.log(
