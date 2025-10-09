@@ -1,5 +1,5 @@
 {
-  "name": "pizzaz-mcp-node",
+  "name": "mcp_server_node",
   "version": "0.1.0",
   "type": "module",
   "private": true,
