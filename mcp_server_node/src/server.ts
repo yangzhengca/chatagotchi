@@ -13,35 +13,24 @@ import {
   ACHIEVEMENTS,
 } from './game-logic.js';
 
-async function getPetState(userId: string): Promise<PetState | null> {
+async function getGameState(
+  userId: string
+): Promise<{ petState: PetState | null; achievementState: AchievementState }> {
   const metadata = await getUserTrustedMetadata(userId);
-  const petState = metadata.petState as PetState | undefined;
-  return petState || null;
+  const petState = (metadata.petState as PetState | undefined) || null;
+  const achievementState =
+    (metadata.achievementState as AchievementState | undefined) ||
+    createInitialAchievementState();
+  return { petState, achievementState };
 }
 
-async function savePetState(userId: string, petState: PetState): Promise<void> {
-  const metadata = await getUserTrustedMetadata(userId);
-  await updateUserTrustedMetadata(userId, {
-    ...metadata,
-    petState,
-  });
-}
-
-async function getAchievementState(userId: string): Promise<AchievementState> {
-  const metadata = await getUserTrustedMetadata(userId);
-  const achievementState = metadata.achievementState as
-    | AchievementState
-    | undefined;
-  return achievementState || createInitialAchievementState();
-}
-
-async function saveAchievementState(
+async function saveGameState(
   userId: string,
+  petState: PetState | null,
   achievementState: AchievementState
 ): Promise<void> {
-  const metadata = await getUserTrustedMetadata(userId);
   await updateUserTrustedMetadata(userId, {
-    ...metadata,
+    petState,
     achievementState,
   });
 }
@@ -112,9 +101,10 @@ export function getServer(): McpServer {
     },
     async ({ name }, { authInfo }) => {
       const userId = getUserId(authInfo);
+      const { achievementState } = await getGameState(userId);
 
       const petState = createInitialPetState(name);
-      await savePetState(userId, petState);
+      await saveGameState(userId, petState, achievementState);
 
       return {
         content: [
@@ -148,7 +138,7 @@ export function getServer(): McpServer {
     },
     async ({ food }, { authInfo }) => {
       const userId = getUserId(authInfo);
-      let petState = await getPetState(userId);
+      let { petState, achievementState } = await getGameState(userId);
 
       if (!petState) {
         return {
@@ -173,15 +163,14 @@ export function getServer(): McpServer {
       }
 
       petState = applyFoodAction(petState, food);
-      await savePetState(userId, petState);
 
       // Check for achievement unlocks
-      const achievementState = await getAchievementState(userId);
       const newAchievements = checkAchievements(petState, achievementState);
       if (newAchievements.length > 0) {
         achievementState.unlockedAchievements.push(...newAchievements);
-        await saveAchievementState(userId, achievementState);
       }
+
+      await saveGameState(userId, petState, achievementState);
 
       if (petState.state === 'DEAD') {
         const achievementText =
@@ -254,7 +243,7 @@ export function getServer(): McpServer {
     },
     async ({ activity }, { authInfo }) => {
       const userId = getUserId(authInfo);
-      let petState = await getPetState(userId);
+      let { petState, achievementState } = await getGameState(userId);
 
       if (!petState) {
         return {
@@ -279,15 +268,14 @@ export function getServer(): McpServer {
       }
 
       petState = applyPlayAction(petState, activity);
-      await savePetState(userId, petState);
 
       // Check for achievement unlocks
-      const achievementState = await getAchievementState(userId);
       const newAchievements = checkAchievements(petState, achievementState);
       if (newAchievements.length > 0) {
         achievementState.unlockedAchievements.push(...newAchievements);
-        await saveAchievementState(userId, achievementState);
       }
+
+      await saveGameState(userId, petState, achievementState);
 
       if (petState.state === 'DEAD') {
         const achievementText =
@@ -382,7 +370,7 @@ export function getServer(): McpServer {
     },
     async (_input, { authInfo }) => {
       const userId = getUserId(authInfo);
-      const achievementState = await getAchievementState(userId);
+      const { achievementState } = await getGameState(userId);
 
       const unlockedCount = achievementState.unlockedAchievements.length;
       const totalCount = ACHIEVEMENTS.length;
