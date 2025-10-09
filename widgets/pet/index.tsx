@@ -14,9 +14,15 @@ function App() {
         <div className="flex flex-col items-center justify-center gap-4 min-h-[300px]">
           <div className="text-6xl flex items-center gap-1">
             <span className="animate-pulse">⏳</span>
-            <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>•</span>
-            <span className="animate-pulse" style={{ animationDelay: '0.4s' }}>•</span>
-            <span className="animate-pulse" style={{ animationDelay: '0.6s' }}>•</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>
+              •
+            </span>
+            <span className="animate-pulse" style={{ animationDelay: '0.4s' }}>
+              •
+            </span>
+            <span className="animate-pulse" style={{ animationDelay: '0.6s' }}>
+              •
+            </span>
           </div>
         </div>
       </div>
@@ -33,7 +39,15 @@ function App() {
     : '❓';
 
   return (
-    <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white">
+    <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white relative">
+      {/* Fullscreen Button */}
+      <button
+        onClick={() => window.openai.requestDisplayMode({ mode: 'pip' })}
+        className="absolute top-2 right-2 p-2 text-xl hover:bg-gray-100 rounded-lg transition-colors"
+      >
+        PIP
+      </button>
+
       <div className="flex flex-col items-center justify-center gap-4">
         {/* Pet Display */}
         <div className="flex items-center gap-2">
@@ -150,20 +164,25 @@ function App() {
         )}
 
         {/* Debug Info */}
-        <div className="w-full space-y-1 text-[10px] opacity-50">
-          <div>
-            <div className="font-semibold">Input:</div>
-            <pre className="bg-gray-100 p-1 rounded overflow-auto text-[9px]">
-              {JSON.stringify(input, null, 2)}
-            </pre>
+        <details className="w-full text-[10px] opacity-50">
+          <summary className="cursor-pointer font-semibold hover:opacity-75">
+            Debug Info
+          </summary>
+          <div className="mt-2 space-y-1">
+            <div>
+              <div className="font-semibold">Input:</div>
+              <pre className="bg-gray-100 p-1 rounded overflow-auto text-[9px]">
+                {JSON.stringify(input, null, 2)}
+              </pre>
+            </div>
+            <div>
+              <div className="font-semibold">Output:</div>
+              <pre className="bg-gray-100 p-1 rounded overflow-auto text-[9px]">
+                {JSON.stringify(output, null, 2)}
+              </pre>
+            </div>
           </div>
-          <div>
-            <div className="font-semibold">Output:</div>
-            <pre className="bg-gray-100 p-1 rounded overflow-auto text-[9px]">
-              {JSON.stringify(output, null, 2)}
-            </pre>
-          </div>
-        </div>
+        </details>
       </div>
     </div>
   );

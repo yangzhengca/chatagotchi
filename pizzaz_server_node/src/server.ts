@@ -41,6 +41,18 @@ export function getServer(): McpServer {
     version: '0.1.0',
   });
 
+  server.registerPrompt('new-game', { title: 'Start a new game' }, () => ({
+    messages: [
+      {
+        role: 'user',
+        content: {
+          type: 'text',
+          text: `Let's start a brand new chatagotchi game`,
+        },
+      },
+    ],
+  }));
+
   server.registerResource('pet-status', 'ui://widget/pet.html', {}, () => {
     return {
       contents: [
@@ -52,6 +64,10 @@ export function getServer(): McpServer {
             <link rel="stylesheet" href="https://chatagotchi-jet.vercel.app/pet.css">
             <script type="module" src="https://chatagotchi-jet.vercel.app/pet.js"></script>
           `.trim(),
+          _meta: {
+            'openai/widgetDescription':
+              "Renders a micro-UI showing the user's pet status.",
+          },
         },
       ],
     };
@@ -100,7 +116,7 @@ export function getServer(): McpServer {
       _meta: {
         'openai/outputTemplate': 'ui://widget/pet.html',
         'openai/toolInvocation/invoking': 'Feeding your pet',
-        'openai/toolInvocation/invoked': 'Your pet ate!',
+        'openai/toolInvocation/invoked': 'Fed your pet!',
         'openai/widgetAccessible': true,
       },
       inputSchema: {
@@ -175,7 +191,7 @@ export function getServer(): McpServer {
       _meta: {
         'openai/outputTemplate': 'ui://widget/pet.html',
         'openai/toolInvocation/invoking': 'Playing with your pet',
-        'openai/toolInvocation/invoked': 'Your pet had fun!',
+        'openai/toolInvocation/invoked': 'Played with your pet!',
         'openai/widgetAccessible': true,
       },
       inputSchema: {
