@@ -7,24 +7,20 @@
 <td><img src="chatagotchi.png" alt="Chatagotchi" width="300"></td>
 <td>
 
-A virtual pet game built with the Model Context Protocol (MCP) and OpenAI Apps SDK. Raise pets, unlock achievements, and experience the nostalgia of digital companions—all inside ChatGPT.
-
+A virtual pet game built with the Model Context Protocol (MCP) and OpenAI [Apps SDK](https://developers.openai.com/apps-sdk/). Raise pets, unlock achievements, and experience the nostalgia of digital companions—all inside ChatGPT.
+Built with [Stytch](https://stytch.com), [Alpic](https://alpic.ai), and [Vercel](https://vercel/com). 
 </td>
 </tr>
 </table>
 
 ## What is Chatagotchi?
 
-Chatagotchi is an MCP server that brings interactive pet care to ChatGPT. Users can:
+Chatagotchi is an MCP server that brings interactive pet care to ChatGPT using the Apps SDK. Users can:
 
-- 🐣 Start a new game and raise a randomly-assigned pet (bird, cat, dog, lizard, or fish)
+- 🐣 Start a new game and raise different kinds of pets (bird, cat, dog, lizard, or fish)
 - 🍎 Feed their pet with different foods (apples, cookies, salad, pizza)
 - 🎮 Play activities (video games, running, skiing)
-- 📊 Monitor three vital stats: stamina, happiness, and health
-- 🏆 Unlock 11 discovery achievements for completing species and finding secret deaths
-- 🎯 Guide pets through lifecycle stages: BABY → CHILD → ADULT → COMPLETE
-
-The game features deterministic mechanics with hidden surprises—like skiing accidents and overeating consequences.
+- 🏆 Unlock 11 discovery achievements
 
 ## Architecture
 
@@ -35,13 +31,12 @@ Node.js/TypeScript server that exposes game tools via the Model Context Protocol
 - **Controllers** (`server.ts`) - MCP tool definitions for ChatGPT integration
 - **Business Logic** (`game-service.ts`) - Game state management and message generation
 - **Game Mechanics** (`game-logic.ts`) - Pure functions for pet actions, lifecycle, and achievements
-- **Authentication** - Stytch OAuth for user identity and metadata persistence
+- **Authentication** - Stytch Connected Apps for MCP authentication
 
-### Shared Types (`shared-types/`)
-Single source of truth for TypeScript types shared between backend and frontend:
-- Pet state definitions (`PetState`, `PetSpecies`, `PetLifecycleState`)
-- Achievement system types (`Achievement`, `AchievementState`)
-- Constants (species emojis, achievement definitions)
+### Website (`app/`)
+A traditional React SPA responsible for marketing, user signup, and OAuth authorization.
+- Hosted as standalone website on Vercel
+- Functions as an OAuth Authorization Server
 
 ### Frontend Widgets (`widgets/`)
 React components rendered inside ChatGPT via the Apps SDK:
@@ -53,19 +48,55 @@ React components rendered inside ChatGPT via the Apps SDK:
 
 - Node.js 18+
 - pnpm (recommended) or npm/yarn
-- Stytch account for authentication (see [Setup](#stytch-setup))
+- Stytch, Alpic, and Vercel accounts
 
-## Installation
+## Deployment
 
-Clone the repository and install dependencies:
+First, fork the repository in Github.
 
-```bash
-git clone <your-repo-url>
-cd chatagotchi
-pnpm install
-```
+### Vercel Setup
+1. Create a Vercel account at https://vercel.com/
+2. Grant Vercel access to your forked repository, and deploy it
+3. Remember your Vercel domain, which will look like `https://chatagotchi-$adjective.vercel.app`
 
-## Development
+### Stytch Setup
+
+1. Create a Stytch account at https://stytch.com
+2. Create a "Consumer" project and get your credentials from the Project Overview page
+   - You'll need the `STYTCH_PROJECT_ID`, `STYTCH_SECRET`, `STYTCH_DOMAIN`, and `STYTCH_PUBLIC_TOKEN` for later
+3. Navigate to Frontend SDK
+   - Enable the Javascript SDK, and add your Vercel domain as an approved domain
+4. Navigate to Connected Apps > Settings
+   - Enable Dynamic Client Registration
+   - Set `${VERCEL_DOMAIN}/oauth/authorize` as your project Authorization URL
+5. Return to Vercel. Set your `STYTCH_PUBLIC_TOKEN` as a `VITE_STYTCH_PUBLIC_TOKEN` environment variable
+
+### Alpic Setup
+
+1. Create an Alpic account at https://alpic.ai
+2. Grant Alpic access to your forked repository
+3. Configure the following build settings:
+   - Build Command: `pnpm run build:mcp` 
+   - Output Directory: `./`
+   - Start Command: `pnpm run --silent start:mcp`
+4. Configure the following environment variables:
+   - `STYTCH_PROJECT_ID` - your project ID from Stytch
+   - `STYTCH_PROJECT_SECRET` - your project secret from Stytch
+   - `STYTCH_DOMAIN` - your project domain from Stytch
+   - `FRONTEND_DOMAIN` - your Vercel Domain
+5. Redeploy the MCP server to ensure all settings have been applied
+
+## Testing in ChatGPT
+
+To add Chatagotchi to ChatGPT:
+
+1. Enable [developer mode](https://platform.openai.com/docs/guides/developer-mode)
+2. Add the ngrok URL to ChatGPT: **Settings > Connectors**
+   - Use the MCP endpoint: `https://chatagotchi-xxxxx.alpic.live`
+
+Once connected, try saying "Let's start a brand new chatagotchi game" to get started.
+
+## Local Development
 
 ### Build the Frontend Widgets
 
@@ -83,143 +114,15 @@ For local development with hot reload:
 pnpm run dev
 ```
 
-The dev server runs on `http://localhost:4444` with CORS enabled.
+The dev server runs on `http://localhost:4444`
 
 ### Run the MCP Server
 
 Start the MCP server:
 
 ```bash
-cd mcp_server_node
-pnpm start
+pnpm start:mcp
 ```
-
-The server listens for MCP requests over HTTP with Stytch OAuth authentication.
-
-### Stytch Setup
-
-1. Create a Stytch account at https://stytch.com
-2. Create a project and get your credentials
-3. Create a `.env` file in `mcp_server_node/`:
-
-```env
-STYTCH_PROJECT_ID=your_project_id
-STYTCH_SECRET=your_secret
-STYTCH_DOMAIN=https://your-auth-domain.stytch.com
-```
-
-## Testing in ChatGPT
-
-To add Chatagotchi to ChatGPT:
-
-1. Enable [developer mode](https://platform.openai.com/docs/guides/developer-mode)
-2. Expose your local server with ngrok:
-   ```bash
-   ngrok http 3000
-   ```
-3. Add the ngrok URL to ChatGPT: **Settings > Connectors**
-   - Use the MCP endpoint: `https://<your-id>.ngrok-free.app/mcp`
-
-Once connected, try saying:
-- "Let's start a brand new chatagotchi game"
-- "Feed my pet a cookie"
-- "Let's go skiing!"
-- "Show me my achievements"
-
-## How It Works
-
-### MCP Tools
-
-The server exposes four tools to ChatGPT:
-
-- **`new-game`** - Creates a new pet with a random species
-- **`pet-feed`** - Feeds the pet (🍎 🍪 🥗 🍕)
-- **`pet-play`** - Plays with the pet (🎮 🏃 🎿)
-- **`achievements`** - Displays achievement progress
-
-Each tool returns structured data and metadata pointing to a widget URI. ChatGPT renders the widget inline with the conversation.
-
-### Game State Persistence
-
-- **Pet state** - Stored per-game in Stytch user metadata (resets on new game)
-- **Achievements** - Persistent across all games (stored separately)
-
-### Stat System
-
-Each action affects three stats (0-100 scale):
-- **Stamina** - Increases with food, decreases with exercise
-- **Happiness** - Boosted by treats and fun activities
-- **Health** - Improved by healthy choices, harmed by junk food
-
-If any stat drops below 20, the pet dies. Feed them pizza too many times and they might explode. 💥
-
-### Lifecycle Progression
-
-Pets age based on turn count:
-- **Turn 0-1**: BABY 🐣
-- **Turn 2-4**: CHILD 🐥
-- **Turn 5-8**: ADULT 🐔
-- **Turn 9+**: COMPLETE 🏆
-
-Complete a species to unlock its achievement!
-
-### Secret Deaths
-
-Discover hidden death scenarios:
-- 🎿 **Skiing accident** - Random tree crash (deterministic RNG)
-- 🍕 **Overeating** - Stamina exceeds 120
-- 👶 **Baby skiing** - Don't take babies to the slopes!
-
-Plus standard deaths from starvation, sadness, and poor health.
-
-## Project Structure
-
-```
-chatagotchi/
-├── mcp_server_node/          # MCP server (Node/TypeScript)
-│   └── src/
-│       ├── server.ts          # MCP tool definitions
-│       ├── game-service.ts    # Business logic layer
-│       ├── game-logic.ts      # Pure game mechanics
-│       ├── stytch.ts          # Authentication & storage
-│       └── index.ts           # Express HTTP server
-├── shared-types/              # Shared TypeScript types
-│   └── game-types.ts          # Types, interfaces, constants
-├── widgets/                   # Frontend React components
-│   ├── pet/                   # Pet display widget
-│   ├── achievements/          # Achievement gallery
-│   └── utils/                 # Shared hooks
-├── assets/                    # Built widget bundles
-└── vite.config.mts           # Widget build configuration
-```
-
-## Adding New Features
-
-### Adding a New Widget
-
-1. Create `widgets/your-widget/` with `index.html`, `index.tsx`, `index.css`, `types.ts`
-2. Add entry to `vite.config.mts` in `rollupOptions.input`
-3. Register resource in `server.ts`:
-   ```typescript
-   server.registerResource('your-widget', 'ui://widget/your-widget.html', ...)
-   ```
-4. Create a tool that returns `_meta['openai/outputTemplate']` pointing to your widget
-
-### Adding New Types
-
-Define types in `shared-types/game-types.ts` and import them in both backend and widget code. Never duplicate type definitions.
-
-### Modifying Game Mechanics
-
-Edit `mcp_server_node/src/game-logic.ts` for stat calculations, lifecycle rules, and achievement detection. The `GameService` layer handles state persistence automatically.
-
-## Deployment
-
-Frontend widgets are deployed to Vercel. The MCP server references production URLs:
-- Pet widget: `https://chatagotchi-jet.vercel.app/pet.{css|js}`
-- Achievements widget: `https://chatagotchi-jet.vercel.app/achievements.{css|js}`
-
-Deploy your MCP server to any Node.js hosting provider that supports Express.
 
 ## Contributing
 
