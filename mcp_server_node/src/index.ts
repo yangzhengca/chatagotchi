@@ -2,10 +2,10 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { requireBearerAuth } from '@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js';
 import express, { type Request, type Response } from 'express';
 
-import { getServer } from './server.js';
-import { config } from './config.js';
-import { stytchVerifier } from './stytch.js';
-import { metadataHandler } from './metadata.js';
+import { getServer } from './server.ts';
+import { config } from './config.ts';
+import { stytchVerifier } from './stytch.ts';
+import { metadataHandler } from './metadata.ts';
 
 const app = express();
 app.use(express.json());

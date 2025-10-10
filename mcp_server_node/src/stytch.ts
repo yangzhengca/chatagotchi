@@ -1,14 +1,15 @@
 import { Client } from 'stytch';
 import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
+import { config } from './config.ts';
 
 let client: Client | null = null;
 
 function getClient(): Client {
   if (!client) {
     client = new Client({
-      project_id: process.env.STYTCH_PROJECT_ID!,
-      secret: process.env.STYTCH_PROJECT_SECRET!,
-      custom_base_url: process.env.STYTCH_DOMAIN!,
+      project_id: config.STYTCH_PROJECT_ID,
+      secret: config.STYTCH_PROJECT_SECRET,
+      custom_base_url: config.STYTCH_DOMAIN,
     });
   }
   return client;

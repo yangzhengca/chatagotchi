@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { GameService } from './game-service.js';
+import { GameService } from './game-service.ts';
+import { config } from './config.ts';
 
 export function getServer(): McpServer {
   const server = new McpServer({
@@ -28,8 +29,8 @@ export function getServer(): McpServer {
           mimeType: 'text/html+skybridge',
           text: `
             <div id="pet-root"></div>
-            <link rel="stylesheet" href="https://chatagotchi-jet.vercel.app/pet.css">
-            <script type="module" src="https://chatagotchi-jet.vercel.app/pet.js"></script>
+            <link rel="stylesheet" href="${config.FRONTEND_DOMAIN}/pet.css">
+            <script type="module" src="${config.FRONTEND_DOMAIN}/pet.js"></script>
           `.trim(),
           _meta: {
             'openai/widgetDescription':
@@ -170,8 +171,8 @@ export function getServer(): McpServer {
             mimeType: 'text/html+skybridge',
             text: `
             <div id="achievements-root"></div>
-            <link rel="stylesheet" href="https://chatagotchi-jet.vercel.app/achievements.css">
-            <script type="module" src="https://chatagotchi-jet.vercel.app/achievements.js"></script>
+            <link rel="stylesheet" href="${config.FRONTEND_DOMAIN}/achievements.css">
+            <script type="module" src="${config.FRONTEND_DOMAIN}/achievements.js"></script>
           `.trim(),
             _meta: {
               'openai/widgetDescription':

@@ -5,6 +5,10 @@ dotenv.config();
 
 const EnvSchema = z.object({
   MCP_HTTP_PORT: z.coerce.number().int().positive().default(3000),
+  STYTCH_PROJECT_ID: z.string(),
+  STYTCH_PROJECT_SECRET: z.string(),
+  STYTCH_DOMAIN: z.string().url(),
+  FRONTEND_DOMAIN: z.string().url(),
 });
 
 const parsedEnv = EnvSchema.safeParse(process.env);

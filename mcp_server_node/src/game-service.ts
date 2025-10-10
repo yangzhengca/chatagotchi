@@ -1,5 +1,5 @@
 import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
-import { getUserTrustedMetadata, updateUserTrustedMetadata } from './stytch.js';
+import { getUserTrustedMetadata, updateUserTrustedMetadata } from './stytch.ts';
 import {
   type PetState,
   type AchievementState,
@@ -10,7 +10,7 @@ import {
   checkAchievements,
   createInitialAchievementState,
   ACHIEVEMENTS,
-} from './game-logic.js';
+} from './game-logic.ts';
 
 export interface GameServiceResult {
   petState: PetState;
