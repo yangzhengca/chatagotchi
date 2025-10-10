@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { useOpenAiGlobal } from '../utils/use-openai-global.ts';
-import { Achievement } from './types';
+import { ACHIEVEMENTS } from '../../shared-types';
 
 function App() {
   const output = useOpenAiGlobal('toolOutput');
@@ -28,8 +28,6 @@ function App() {
     );
   }
 
-  const achievements =
-    (output?.achievements as Achievement[] | undefined) || [];
   const unlockedAchievements =
     (output?.unlockedAchievements as string[] | undefined) || [];
   const unlockedSet = new Set(unlockedAchievements);
@@ -41,13 +39,13 @@ function App() {
         <div className="text-center">
           <div className="text-2xl font-bold">Achievements</div>
           <div className="text-sm text-gray-600">
-            {unlockedAchievements.length} / {achievements.length} Unlocked
+            {unlockedAchievements.length} / {ACHIEVEMENTS.length} Unlocked
           </div>
         </div>
 
         {/* Achievement Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {achievements.map((achievement) => {
+          {ACHIEVEMENTS.map((achievement) => {
             const isUnlocked = unlockedSet.has(achievement.id);
             return (
               <div
@@ -85,13 +83,6 @@ function App() {
             );
           })}
         </div>
-
-        {achievements.length === 0 && (
-          <div className="text-center text-gray-500 py-8">
-            <div className="text-4xl mb-2">🏆</div>
-            <div className="text-sm">No achievements found</div>
-          </div>
-        )}
       </div>
     </div>
   );

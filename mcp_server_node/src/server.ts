@@ -108,6 +108,7 @@ export function getServer(): McpServer {
         ],
         structuredContent: {
           petState: result.petState,
+          newAchievements: result.newAchievements,
           lastAction: { type: 'food', emoji: food },
         },
       };
@@ -150,6 +151,7 @@ export function getServer(): McpServer {
         ],
         structuredContent: {
           petState: result.petState,
+          newAchievements: result.newAchievements,
           lastAction: { type: 'play', emoji: activity },
         },
       };
@@ -209,7 +211,6 @@ export function getServer(): McpServer {
           },
         ],
         structuredContent: {
-          achievements: result.achievements,
           unlockedAchievements: result.unlockedAchievements,
         },
       };
