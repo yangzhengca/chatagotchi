@@ -1,4 +1,5 @@
 import { useStytchUser } from '@stytch/react';
+import { Logout } from './Auth.tsx';
 
 export default function Home() {
   const { user } = useStytchUser();
@@ -6,7 +7,12 @@ export default function Home() {
     <div className="space-y-4">
       <h1 className="text-4xl font-bold mb-6">🐣 Chatagotchi Demo</h1>
       <p className="text-gray-500">
-        {user && <> You are logged in as {user.emails[0].email}</>}
+        {user && (
+          <>
+            {' '}
+            You are logged in as {user.emails[0].email} <Logout />
+          </>
+        )}
         {!user && <> You are not logged in</>}
       </p>
       <p className="text-lg">
@@ -46,7 +52,16 @@ export default function Home() {
             </a>
             .
           </li>
-          <li>Various UI widgets that can be injected into ChatGPT chats</li>
+          <li>
+            Multiple UI widget "microfrontends" hosted on{' '}
+            <a
+              href="https://vercel.com"
+              className="text-blue-600 hover:underline"
+            >
+              Vercel
+            </a>{' '}
+            that can be referenced by ChatGPT chats.
+          </li>
         </ul>
       </div>
       <p className="text-lg">
@@ -60,8 +75,10 @@ export default function Home() {
         <ul className="list-disc list-inside space-y-1 ml-4">
           <li>Enable Developer Mode in ChatGPT</li>
           <li>
-            Configure the MCP Server running at{' '}
-            <code className="bg-gray-100 px-2 py-1 rounded">https://TODO</code>
+            Connect to the MCP Server running at{' '}
+            <code className="bg-gray-100 px-2 py-1 rounded">
+              {import.meta.env.VITE_APLIC_MCP_URL}
+            </code>
           </li>
         </ul>
       </div>

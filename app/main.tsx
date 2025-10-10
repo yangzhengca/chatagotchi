@@ -19,6 +19,9 @@ if (import.meta.env.DEV) {
         <li>
           <a href="/widgets/pet">🔗 Pet</a>
         </li>
+        <li>
+          <a href="/widgets/achievements">🔗 Achievements</a>
+        </li>
       </ul>
     </div>
   );

@@ -168,29 +168,15 @@ export const Authorize = withLoginRequired(function () {
   const pets = ['🐣', '🐱', '🐶', '🦎', '🐟'];
 
   return (
-    <div className="relative min-h-screen p-8 overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Animated Pets Background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {pets.map((pet, i) => (
-          <div
-            key={i}
-            className="absolute text-6xl animate-float"
-            style={{
-              left: `${i * 20 + 10}%`,
-              top: `${i * 15 + 10}%`,
-              animationDelay: `${i * 0.8}s`,
-              animationDuration: `${4 + i}s`,
-            }}
-          >
-            {pet}
-          </div>
-        ))}
-      </div>
-
+    <div className="relative p-8 overflow-hidden">
       {/* Consent Card */}
-      <div className="relative max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-8 border-4 border-purple-200">
+      <div className="relative max-w-2xl mx-auto bg-white rounded-3xl p-8 border-4 border-purple-200">
         <div className="text-center mb-6">
-          <div className="text-7xl mb-4">🐣</div>
+          <div className="text-7xl mb-4 overflow-hidden whitespace-nowrap">
+            <div className="inline-block animate-marquee">
+              {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}
+            </div>
+          </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             {authInfo?.client_name || 'ChatGPT'} wants to connect!
           </h1>
@@ -225,17 +211,6 @@ export const Authorize = withLoginRequired(function () {
                 </div>
                 <div className="text-sm text-gray-600">
                   Help them exercise and have fun
-                </div>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <span className="text-2xl mr-3">📊</span>
-              <div>
-                <div className="font-semibold text-gray-800">
-                  View pet status
-                </div>
-                <div className="text-sm text-gray-600">
-                  Check their health, happiness, and stamina
                 </div>
               </div>
             </li>
@@ -287,22 +262,16 @@ export const Authorize = withLoginRequired(function () {
 
       {/* CSS Animation */}
       <style>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) rotate(0deg);
+        @keyframes marquee {
+          0% {
+            transform: translateX(0);
           }
-          25% {
-            transform: translateY(-30px) rotate(5deg);
-          }
-          50% {
-            transform: translateY(-50px) rotate(-5deg);
-          }
-          75% {
-            transform: translateY(-30px) rotate(5deg);
+          100% {
+            transform: translateX(-33.333%);
           }
         }
-        .animate-float {
-          animation: float 5s ease-in-out infinite;
+        .animate-marquee {
+          animation: marquee 10s linear infinite;
         }
       `}</style>
     </div>
@@ -335,9 +304,11 @@ export const Logout = function () {
   if (!user) return null;
 
   return (
-    <button className="primary" onClick={() => stytch.session.revoke()}>
-      {' '}
-      Log Out{' '}
+    <button
+      className="ml-2 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 underline"
+      onClick={() => stytch.session.revoke()}
+    >
+      Log Out
     </button>
   );
 };
