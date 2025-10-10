@@ -52,7 +52,7 @@ React components rendered inside ChatGPT via the Apps SDK:
 
 ## Deployment
 
-First, fork the repository in Github.
+Fork the repository in Github so you can connect your personal repository to Vercel and Alpic.
 
 ### Vercel Setup
 1. Create a Vercel account at https://vercel.com/
