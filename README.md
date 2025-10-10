@@ -1,111 +1,229 @@
-# Apps SDK Examples Gallery
+# Chatagotchi
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-This repository showcases example UI components to be used with the Apps SDK, as well as example MCP servers that expose a collection of components as tools.
-It is meant to be used as a starting point and source of inspiration to build your own apps for ChatGPT.
+<table>
+<tr>
+<td><img src="chatagotchi.png" alt="Chatagotchi" width="300"></td>
+<td>
 
-## MCP + Apps SDK overview
+A virtual pet game built with the Model Context Protocol (MCP) and OpenAI Apps SDK. Raise pets, unlock achievements, and experience the nostalgia of digital companions—all inside ChatGPT.
 
-The Model Context Protocol (MCP) is an open specification for connecting large language model clients to external tools, data, and user interfaces. An MCP server exposes tools that a model can call during a conversation and returns results according to the tool contracts. Those results can include extra metadata—such as inline HTML—that the Apps SDK uses to render rich UI components (widgets) alongside assistant messages.
+</td>
+</tr>
+</table>
 
-Within the Apps SDK, MCP keeps the server, model, and UI in sync. By standardizing the wire format, authentication, and metadata, it lets ChatGPT reason about your connector the same way it reasons about built-in tools. A minimal MCP integration for Apps SDK implements three capabilities:
+## What is Chatagotchi?
 
-1. **List tools** – Your server advertises the tools it supports, including their JSON Schema input/output contracts and optional annotations (for example, `readOnlyHint`).
-2. **Call tools** – When a model selects a tool, it issues a `call_tool` request with arguments that match the user intent. Your server executes the action and returns structured content the model can parse.
-3. **Return widgets** – Alongside structured content, return embedded resources in the response metadata so the Apps SDK can render the interface inline in the Apps SDK client (ChatGPT).
+Chatagotchi is an MCP server that brings interactive pet care to ChatGPT. Users can:
 
-Because the protocol is transport agnostic, you can host the server over Server-Sent Events or streaming HTTP—Apps SDK supports both.
+- 🐣 Start a new game and raise a randomly-assigned pet (bird, cat, dog, lizard, or fish)
+- 🍎 Feed their pet with different foods (apples, cookies, salad, pizza)
+- 🎮 Play activities (video games, running, skiing)
+- 📊 Monitor three vital stats: stamina, happiness, and health
+- 🏆 Unlock 11 discovery achievements for completing species and finding secret deaths
+- 🎯 Guide pets through lifecycle stages: BABY → CHILD → ADULT → COMPLETE
 
-The MCP servers in this demo highlight how each tool can light up widgets by combining structured payloads with `_meta.openai/outputTemplate` metadata returned from the MCP servers.
+The game features deterministic mechanics with hidden surprises—like skiing accidents and overeating consequences.
 
-## Repository structure
+## Architecture
 
-- `src/` – Source for each widget example.
-- `assets/` – Generated HTML, JS, and CSS bundles after running the build step.
-- `pizzaz_server_node/` – MCP server implemented with the official TypeScript SDK.
-- `build-all.mts` – Vite build orchestrator that produces hashed bundles for every widget entrypoint.
+Chatagotchi uses a three-layer architecture:
+
+### MCP Server (`mcp_server_node/`)
+Node.js/TypeScript server that exposes game tools via the Model Context Protocol. Built with:
+- **Controllers** (`server.ts`) - MCP tool definitions for ChatGPT integration
+- **Business Logic** (`game-service.ts`) - Game state management and message generation
+- **Game Mechanics** (`game-logic.ts`) - Pure functions for pet actions, lifecycle, and achievements
+- **Authentication** - Stytch OAuth for user identity and metadata persistence
+
+### Shared Types (`shared-types/`)
+Single source of truth for TypeScript types shared between backend and frontend:
+- Pet state definitions (`PetState`, `PetSpecies`, `PetLifecycleState`)
+- Achievement system types (`Achievement`, `AchievementState`)
+- Constants (species emojis, achievement definitions)
+
+### Frontend Widgets (`widgets/`)
+React components rendered inside ChatGPT via the Apps SDK:
+- **Pet Widget** - Displays pet emoji, name, stats, lifecycle stage, and action buttons
+- **Achievements Widget** - Gallery of locked/unlocked achievements with progress tracking
+- **Utilities** - Shared hooks for accessing OpenAI global context and widget state
 
 ## Prerequisites
 
 - Node.js 18+
 - pnpm (recommended) or npm/yarn
+- Stytch account for authentication (see [Setup](#stytch-setup))
 
-## Install dependencies
+## Installation
 
-Clone the repository and install the workspace dependencies:
+Clone the repository and install dependencies:
 
 ```bash
+git clone <your-repo-url>
+cd chatagotchi
 pnpm install
 ```
 
-> Using npm or yarn? Install the root dependencies with your preferred client and adjust the commands below accordingly.
+## Development
 
-## Build the components gallery
+### Build the Frontend Widgets
 
-The components are bundled into standalone assets that the MCP servers serve as reusable UI resources.
+Build widgets into static assets for deployment:
 
 ```bash
 pnpm run build
 ```
 
-This command runs `build-all.mts`, producing versioned `.html`, `.js`, and `.css` files inside `assets/`. Each widget is wrapped with the CSS it needs so you can host the bundles directly or ship them with your own server.
+This produces versioned `.html`, `.js`, and `.css` files in `assets/`. Each widget is self-contained with its own styles.
 
-To iterate locally, you can also launch the Vite dev server:
+For local development with hot reload:
 
 ```bash
 pnpm run dev
 ```
 
-## Serve the static assets
+The dev server runs on `http://localhost:4444` with CORS enabled.
 
-If you want to preview the generated bundles without the MCP servers, start the static file server after running a build:
+### Run the MCP Server
+
+Start the MCP server:
 
 ```bash
-pnpm run serve
+cd mcp_server_node
+pnpm start
 ```
 
-The assets are exposed at [`http://localhost:4444`](http://localhost:4444) with CORS enabled so that local tooling (including MCP inspectors) can fetch them.
+The server listens for MCP requests over HTTP with Stytch OAuth authentication.
 
-## Run the MCP servers
+### Stytch Setup
 
-The repository ships several demo MCP servers that highlight different widget bundles:
+1. Create a Stytch account at https://stytch.com
+2. Create a project and get your credentials
+3. Create a `.env` file in `mcp_server_node/`:
 
-- **Pizzaz (Node)** – pizza-inspired collection of tools and components
-
-Every tool response includes plain text content, structured JSON, and `_meta.openai/outputTemplate` metadata so the Apps SDK can hydrate the matching widget.
-
-### Pizzaz Node server
-
-```bash
-cd pizzaz_server_node
-pnpm start
+```env
+STYTCH_PROJECT_ID=your_project_id
+STYTCH_SECRET=your_secret
+STYTCH_DOMAIN=https://your-auth-domain.stytch.com
 ```
 
 ## Testing in ChatGPT
 
-To add these apps to ChatGPT, enable [developer mode](https://platform.openai.com/docs/guides/developer-mode), and add your apps in Settings > Connectors.
+To add Chatagotchi to ChatGPT:
 
-To add your local server without deploying it, you can use a tool like [ngrok](https://ngrok.com/) to expose your local server to the internet.
+1. Enable [developer mode](https://platform.openai.com/docs/guides/developer-mode)
+2. Expose your local server with ngrok:
+   ```bash
+   ngrok http 3000
+   ```
+3. Add the ngrok URL to ChatGPT: **Settings > Connectors**
+   - Use the MCP endpoint: `https://<your-id>.ngrok-free.app/mcp`
 
-For example, once your mcp servers are running, you can run:
+Once connected, try saying:
+- "Let's start a brand new chatagotchi game"
+- "Feed my pet a cookie"
+- "Let's go skiing!"
+- "Show me my achievements"
 
-```bash
-ngrok http 8000
+## How It Works
+
+### MCP Tools
+
+The server exposes four tools to ChatGPT:
+
+- **`new-game`** - Creates a new pet with a random species
+- **`pet-feed`** - Feeds the pet (🍎 🍪 🥗 🍕)
+- **`pet-play`** - Plays with the pet (🎮 🏃 🎿)
+- **`achievements`** - Displays achievement progress
+
+Each tool returns structured data and metadata pointing to a widget URI. ChatGPT renders the widget inline with the conversation.
+
+### Game State Persistence
+
+- **Pet state** - Stored per-game in Stytch user metadata (resets on new game)
+- **Achievements** - Persistent across all games (stored separately)
+
+### Stat System
+
+Each action affects three stats (0-100 scale):
+- **Stamina** - Increases with food, decreases with exercise
+- **Happiness** - Boosted by treats and fun activities
+- **Health** - Improved by healthy choices, harmed by junk food
+
+If any stat drops below 20, the pet dies. Feed them pizza too many times and they might explode. 💥
+
+### Lifecycle Progression
+
+Pets age based on turn count:
+- **Turn 0-1**: BABY 🐣
+- **Turn 2-4**: CHILD 🐥
+- **Turn 5-8**: ADULT 🐔
+- **Turn 9+**: COMPLETE 🏆
+
+Complete a species to unlock its achievement!
+
+### Secret Deaths
+
+Discover hidden death scenarios:
+- 🎿 **Skiing accident** - Random tree crash (deterministic RNG)
+- 🍕 **Overeating** - Stamina exceeds 120
+- 👶 **Baby skiing** - Don't take babies to the slopes!
+
+Plus standard deaths from starvation, sadness, and poor health.
+
+## Project Structure
+
+```
+chatagotchi/
+├── mcp_server_node/          # MCP server (Node/TypeScript)
+│   └── src/
+│       ├── server.ts          # MCP tool definitions
+│       ├── game-service.ts    # Business logic layer
+│       ├── game-logic.ts      # Pure game mechanics
+│       ├── stytch.ts          # Authentication & storage
+│       └── index.ts           # Express HTTP server
+├── shared-types/              # Shared TypeScript types
+│   └── game-types.ts          # Types, interfaces, constants
+├── widgets/                   # Frontend React components
+│   ├── pet/                   # Pet display widget
+│   ├── achievements/          # Achievement gallery
+│   └── utils/                 # Shared hooks
+├── assets/                    # Built widget bundles
+└── vite.config.mts           # Widget build configuration
 ```
 
-You will get a public URL that you can use to add your local server to ChatGPT in Settings > Connectors.
+## Adding New Features
 
-For example: `https://<custom_endpoint>.ngrok-free.app/mcp`
+### Adding a New Widget
 
-## Next steps
+1. Create `widgets/your-widget/` with `index.html`, `index.tsx`, `index.css`, `types.ts`
+2. Add entry to `vite.config.mts` in `rollupOptions.input`
+3. Register resource in `server.ts`:
+   ```typescript
+   server.registerResource('your-widget', 'ui://widget/your-widget.html', ...)
+   ```
+4. Create a tool that returns `_meta['openai/outputTemplate']` pointing to your widget
 
-- Customize the widget data: edit the handlers in `pizzaz_server_node/src`
-- Create your own components and add them to the gallery: drop new entries into `src/` and they will be picked up automatically by the build script.
+### Adding New Types
+
+Define types in `shared-types/game-types.ts` and import them in both backend and widget code. Never duplicate type definitions.
+
+### Modifying Game Mechanics
+
+Edit `mcp_server_node/src/game-logic.ts` for stat calculations, lifecycle rules, and achievement detection. The `GameService` layer handles state persistence automatically.
+
+## Deployment
+
+Frontend widgets are deployed to Vercel. The MCP server references production URLs:
+- Pet widget: `https://chatagotchi-jet.vercel.app/pet.{css|js}`
+- Achievements widget: `https://chatagotchi-jet.vercel.app/achievements.{css|js}`
+
+Deploy your MCP server to any Node.js hosting provider that supports Express.
 
 ## Contributing
 
-You are welcome to open issues or submit PRs to improve this app, however, please note that we may not review all suggestions.
+Contributions are welcome! Open an issue or submit a PR to improve the game.
 
 ## License
 
