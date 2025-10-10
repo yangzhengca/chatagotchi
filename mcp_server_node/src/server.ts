@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { GameService } from './game-service.ts';
 import { config } from './config.ts';
-import {
+import type {
   AchievementsResult,
   TurnResult,
 } from '../../shared-types/game-types.ts';
