@@ -139,3 +139,11 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '👶',
   },
 ];
+
+export type TurnResult = {
+  petState: PetState | null;
+  newAchievements: string[];
+  lastAction: { type: string; emoji: string };
+};
+
+export type AchievementsResult = { unlockedAchievements: string[] };

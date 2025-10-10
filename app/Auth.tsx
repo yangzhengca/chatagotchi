@@ -126,9 +126,7 @@ export const Authorize = withLoginRequired(function () {
         response_type: 'code',
         consent_granted: granted,
       });
-      if (response.redirect_uri) {
-        window.location.href = response.redirect_uri;
-      }
+      window.location.href = response.redirect_uri;
     } catch (err) {
       console.error('OAuth authorize submit failed:', err);
       setError('Oops! Something went wrong. Please try again.');
@@ -174,6 +172,7 @@ export const Authorize = withLoginRequired(function () {
         <div className="text-center mb-6">
           <div className="text-7xl mb-4 overflow-hidden whitespace-nowrap">
             <div className="inline-block animate-marquee">
+              {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}{' '}
               {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}
             </div>
           </div>
@@ -237,13 +236,6 @@ export const Authorize = withLoginRequired(function () {
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          <button
-            onClick={() => handleConsent(false)}
-            disabled={submitting}
-            className="flex-1 px-6 py-4 text-lg font-bold text-gray-700 bg-gray-200 rounded-xl hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            Deny
-          </button>
           <button
             onClick={() => handleConsent(true)}
             disabled={submitting}

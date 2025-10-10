@@ -1,10 +1,10 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { useOpenAiGlobal } from '../utils/use-openai-global.ts';
-import { ACHIEVEMENTS } from '../../shared-types';
+import { ACHIEVEMENTS, AchievementsResult } from '../../shared-types';
 
 function App() {
-  const output = useOpenAiGlobal('toolOutput');
+  const output = useOpenAiGlobal('toolOutput') as AchievementsResult | null;
 
   // Show loading state when output is null
   if (output === null) {

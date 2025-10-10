@@ -1,11 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { useOpenAiGlobal } from '../utils/use-openai-global.ts';
-import { PetState, SPECIES_EMOJIS } from './types';
+import { SPECIES_EMOJIS, TurnResult } from './types';
 
 function App() {
   const input = useOpenAiGlobal('toolInput');
-  const output = useOpenAiGlobal('toolOutput');
+  const output = useOpenAiGlobal('toolOutput') as TurnResult | null;
 
   // Show loading state when output is null
   if (output === null) {
@@ -29,10 +29,8 @@ function App() {
     );
   }
 
-  const petState = output?.petState as PetState | undefined | null;
-  const lastAction = output?.lastAction as
-    | { type: 'food' | 'play'; emoji: string }
-    | undefined;
+  const petState = output.petState;
+  const lastAction = output.lastAction;
 
   const petEmoji = petState
     ? SPECIES_EMOJIS[petState.species][petState.state]
@@ -41,16 +39,18 @@ function App() {
   return (
     <div className="antialiased w-full text-black px-4 py-4 border border-black/10 rounded-2xl sm:rounded-3xl overflow-hidden bg-white relative">
       {/* Fullscreen Button */}
-      <button
-        onClick={() =>
-          window.openai.sendFollowUpMessage({
-            prompt: 'Show me my achievements so far',
-          })
-        }
-        className="absolute top-2 right-2 p-2 text-xl hover:bg-gray-100 rounded-lg transition-colors"
-      >
-        Achievements ✨
-      </button>
+      {output.newAchievements.length && (
+        <button
+          onClick={() =>
+            window.openai.sendFollowUpMessage({
+              prompt: 'Show me my achievements so far',
+            })
+          }
+          className="absolute top-2 right-2 p-2 text-xl hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          New Achievement Unlocked ✨
+        </button>
+      )}
 
       <div className="flex flex-col items-center justify-center gap-4">
         {/* Pet Display */}

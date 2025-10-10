@@ -3,7 +3,7 @@ import type {
   PetSpecies,
   PetLifecycleState,
   AchievementState,
-} from '../../shared-types/game-types.js';
+} from '../../shared-types/game-types.ts';
 
 // Re-export types and constants for convenience
 export type {
@@ -12,8 +12,8 @@ export type {
   PetLifecycleState,
   Achievement,
   AchievementState,
-} from '../../shared-types/game-types.js';
-export { ACHIEVEMENTS, SPECIES_EMOJIS } from '../../shared-types/game-types.js';
+} from '../../shared-types/game-types.ts';
+export { ACHIEVEMENTS, SPECIES_EMOJIS } from '../../shared-types/game-types.ts';
 
 // Game constants
 const MIN_STAT = 20;
@@ -213,7 +213,9 @@ export function checkAchievements(
       deathAchievement = 'death_skiing';
     } else if (petState.deathReason.includes('overeating')) {
       deathAchievement = 'death_overeating';
-    } else if (petState.deathReason.includes("baby shouldn't be on the slopes")) {
+    } else if (
+      petState.deathReason.includes("baby shouldn't be on the slopes")
+    ) {
       deathAchievement = 'death_baby_skiing';
     }
 

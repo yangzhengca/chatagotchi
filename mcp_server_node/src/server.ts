@@ -2,6 +2,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { GameService } from './game-service.ts';
 import { config } from './config.ts';
+import {
+  AchievementsResult,
+  TurnResult,
+} from '../../shared-types/game-types.ts';
 
 export function getServer(): McpServer {
   const server = new McpServer({
@@ -68,13 +72,15 @@ export function getServer(): McpServer {
         ],
         structuredContent: {
           petState: result.petState,
-        },
+          newAchievements: [],
+          lastAction: { type: 'new-game', emoji: '' },
+        } satisfies TurnResult,
       };
     }
   );
 
   server.registerTool(
-    'pet-feed',
+    'feed',
     {
       title: 'Feed your pet',
       description:
@@ -111,13 +117,13 @@ export function getServer(): McpServer {
           petState: result.petState,
           newAchievements: result.newAchievements,
           lastAction: { type: 'food', emoji: food },
-        },
+        } satisfies TurnResult,
       };
     }
   );
 
   server.registerTool(
-    'pet-play',
+    'play',
     {
       title: 'Play with your pet',
       description:
@@ -139,7 +145,11 @@ export function getServer(): McpServer {
       if (!result) {
         return {
           content: [{ type: 'text', text: 'You need to start a game first!' }],
-          structuredContent: { petState: null },
+          structuredContent: {
+            petState: null,
+            lastAction: { type: 'new-game', emoji: '' },
+            newAchievements: [],
+          } satisfies TurnResult,
         };
       }
 
@@ -154,7 +164,7 @@ export function getServer(): McpServer {
           petState: result.petState,
           newAchievements: result.newAchievements,
           lastAction: { type: 'play', emoji: activity },
-        },
+        } satisfies TurnResult,
       };
     }
   );
@@ -213,7 +223,7 @@ export function getServer(): McpServer {
         ],
         structuredContent: {
           unlockedAchievements: result.unlockedAchievements,
-        },
+        } satisfies AchievementsResult,
       };
     }
   );

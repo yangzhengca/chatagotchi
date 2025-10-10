@@ -77,7 +77,8 @@ export default function Home() {
           <li>
             Connect to the MCP Server running at{' '}
             <code className="bg-gray-100 px-2 py-1 rounded">
-              {import.meta.env.VITE_APLIC_MCP_URL}
+              {import.meta.env.VITE_APLIC_MCP_URL ??
+                'TODO: Configure Alpic Deployment URL'}
             </code>
           </li>
         </ul>
