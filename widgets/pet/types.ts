@@ -1,63 +1,10 @@
-export type PetLifecycleState =
-  | 'BABY'
-  | 'CHILD'
-  | 'ADULT'
-  | 'DEAD'
-  | 'COMPLETE';
-
-export type PetSpecies = 'bird' | 'cat' | 'dog' | 'lizard' | 'fish';
-
-export interface PetState {
-  state: PetLifecycleState;
-  species: PetSpecies;
-  name: string;
-  stamina: number; // 0-100
-  happiness: number; // 0-100
-  health: number; // 0-100
-  turn: number;
-  deathReason?: string;
-}
-
-export const SPECIES_EMOJIS: Record<
+// Import shared types
+export type {
+  PetLifecycleState,
   PetSpecies,
-  Record<PetLifecycleState, string>
-> = {
-  bird: {
-    BABY: '🐣',
-    CHILD: '🐥',
-    ADULT: '🐔',
-    DEAD: '💀',
-    COMPLETE: '🏆',
-  },
-  cat: {
-    BABY: '🐱',
-    CHILD: '🐈',
-    ADULT: '🐯',
-    DEAD: '💀',
-    COMPLETE: '🏆',
-  },
-  dog: {
-    BABY: '🐶',
-    CHILD: '🐕',
-    ADULT: '🐺',
-    DEAD: '💀',
-    COMPLETE: '🏆',
-  },
-  lizard: {
-    BABY: '🦎',
-    CHILD: '🐊',
-    ADULT: '🐉',
-    DEAD: '💀',
-    COMPLETE: '🏆',
-  },
-  fish: {
-    BABY: '🐟',
-    CHILD: '🐠',
-    ADULT: '🦈',
-    DEAD: '💀',
-    COMPLETE: '🏆',
-  },
-};
+  PetState,
+} from '../../shared-types/game-types.js';
+export { SPECIES_EMOJIS } from '../../shared-types/game-types.js';
 
 export const FOOD_OPTIONS = [
   { emoji: '🍎', name: 'Apple', desc: 'Healthy and filling' },

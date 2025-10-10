@@ -1,0 +1,9 @@
+{
+  "name": "@chatagotchi/shared-types",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./game-types.ts",
+  "exports": {
+    ".": "./game-types.ts"
+  }
+}

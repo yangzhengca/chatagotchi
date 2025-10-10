@@ -1,51 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 import { z } from 'zod';
-import { getUserTrustedMetadata, updateUserTrustedMetadata } from './stytch.js';
-import {
-  type PetState,
-  type AchievementState,
-  createInitialPetState,
-  applyFoodAction,
-  applyPlayAction,
-  checkAchievements,
-  createInitialAchievementState,
-  ACHIEVEMENTS,
-} from './game-logic.js';
-
-async function getGameState(
-  userId: string
-): Promise<{ petState: PetState | null; achievementState: AchievementState }> {
-  const metadata = await getUserTrustedMetadata(userId);
-  const petState = (metadata.petState as PetState | undefined) || null;
-  const achievementState =
-    (metadata.achievementState as AchievementState | undefined) ||
-    createInitialAchievementState();
-  return { petState, achievementState };
-}
-
-async function saveGameState(
-  userId: string,
-  petState: PetState | null,
-  achievementState: AchievementState
-): Promise<void> {
-  await updateUserTrustedMetadata(userId, {
-    petState,
-    achievementState,
-  });
-}
-
-function getUserId(authInfo?: AuthInfo): string {
-  if (
-    !authInfo ||
-    !authInfo.extra ||
-    typeof authInfo.extra.subject !== 'string'
-  ) {
-    console.error('Auth info was', authInfo);
-    throw Error('Auth Info missing');
-  }
-  return authInfo.extra.subject;
-}
+import { GameService } from './game-service.js';
 
 export function getServer(): McpServer {
   const server = new McpServer({
@@ -100,21 +55,18 @@ export function getServer(): McpServer {
       inputSchema: { name: z.string() },
     },
     async ({ name }, { authInfo }) => {
-      const userId = getUserId(authInfo);
-      const { achievementState } = await getGameState(userId);
-
-      const petState = createInitialPetState(name);
-      await saveGameState(userId, petState, achievementState);
+      const gameService = new GameService(authInfo);
+      const result = await gameService.startNewGame(name);
 
       return {
         content: [
           {
             type: 'text',
-            text: `Say hello to ${name}`,
+            text: result.message,
           },
         ],
         structuredContent: {
-          petState,
+          petState: result.petState,
         },
       };
     }
@@ -137,76 +89,13 @@ export function getServer(): McpServer {
       },
     },
     async ({ food }, { authInfo }) => {
-      const userId = getUserId(authInfo);
-      let { petState, achievementState } = await getGameState(userId);
+      const gameService = new GameService(authInfo);
+      const result = await gameService.feedPet(food);
 
-      if (!petState) {
+      if (!result) {
         return {
           content: [{ type: 'text', text: 'You need to start a game first!' }],
           structuredContent: { petState: null },
-        };
-      }
-
-      if (petState.state === 'DEAD' || petState.state === 'COMPLETE') {
-        return {
-          content: [
-            {
-              type: 'text',
-              text:
-                petState.state === 'DEAD'
-                  ? `Your pet died! ${petState.deathReason || ''}`
-                  : 'Your pet has grown up! Start a new game to raise another.',
-            },
-          ],
-          structuredContent: { petState },
-        };
-      }
-
-      petState = applyFoodAction(petState, food);
-
-      // Check for achievement unlocks
-      const newAchievements = checkAchievements(petState, achievementState);
-      if (newAchievements.length > 0) {
-        achievementState.unlockedAchievements.push(...newAchievements);
-      }
-
-      await saveGameState(userId, petState, achievementState);
-
-      if (petState.state === 'DEAD') {
-        const achievementText =
-          newAchievements.length > 0
-            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
-            : '';
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Oh no! ${petState.deathReason}${achievementText}`,
-            },
-          ],
-          structuredContent: {
-            petState,
-            lastAction: { type: 'food', emoji: food },
-          },
-        };
-      }
-
-      if (petState.state === 'COMPLETE') {
-        const achievementText =
-          newAchievements.length > 0
-            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
-            : '';
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Congratulations! ${petState.name} has grown up!${achievementText}`,
-            },
-          ],
-          structuredContent: {
-            petState,
-            lastAction: { type: 'food', emoji: food },
-          },
         };
       }
 
@@ -214,11 +103,11 @@ export function getServer(): McpServer {
         content: [
           {
             type: 'text',
-            text: `Fed ${petState.name} ${food}! Turn ${petState.turn}/6`,
+            text: result.message,
           },
         ],
         structuredContent: {
-          petState,
+          petState: result.petState,
           lastAction: { type: 'food', emoji: food },
         },
       };
@@ -242,76 +131,13 @@ export function getServer(): McpServer {
       },
     },
     async ({ activity }, { authInfo }) => {
-      const userId = getUserId(authInfo);
-      let { petState, achievementState } = await getGameState(userId);
+      const gameService = new GameService(authInfo);
+      const result = await gameService.playWithPet(activity);
 
-      if (!petState) {
+      if (!result) {
         return {
           content: [{ type: 'text', text: 'You need to start a game first!' }],
           structuredContent: { petState: null },
-        };
-      }
-
-      if (petState.state === 'DEAD' || petState.state === 'COMPLETE') {
-        return {
-          content: [
-            {
-              type: 'text',
-              text:
-                petState.state === 'DEAD'
-                  ? `Your pet died! ${petState.deathReason || ''}`
-                  : 'Your pet has grown up! Start a new game to raise another.',
-            },
-          ],
-          structuredContent: { petState },
-        };
-      }
-
-      petState = applyPlayAction(petState, activity);
-
-      // Check for achievement unlocks
-      const newAchievements = checkAchievements(petState, achievementState);
-      if (newAchievements.length > 0) {
-        achievementState.unlockedAchievements.push(...newAchievements);
-      }
-
-      await saveGameState(userId, petState, achievementState);
-
-      if (petState.state === 'DEAD') {
-        const achievementText =
-          newAchievements.length > 0
-            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
-            : '';
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Oh no! ${petState.deathReason}${achievementText}`,
-            },
-          ],
-          structuredContent: {
-            petState,
-            lastAction: { type: 'play', emoji: activity },
-          },
-        };
-      }
-
-      if (petState.state === 'COMPLETE') {
-        const achievementText =
-          newAchievements.length > 0
-            ? `\n\nAchievement Unlocked! ${newAchievements.map((id) => ACHIEVEMENTS.find((a) => a.id === id)?.emoji).join(' ')}`
-            : '';
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Congratulations! ${petState.name} has grown up!${achievementText}`,
-            },
-          ],
-          structuredContent: {
-            petState,
-            lastAction: { type: 'play', emoji: activity },
-          },
         };
       }
 
@@ -319,11 +145,11 @@ export function getServer(): McpServer {
         content: [
           {
             type: 'text',
-            text: `${petState.name} did ${activity}! Turn ${petState.turn}/6`,
+            text: result.message,
           },
         ],
         structuredContent: {
-          petState,
+          petState: result.petState,
           lastAction: { type: 'play', emoji: activity },
         },
       };
@@ -372,22 +198,19 @@ export function getServer(): McpServer {
       inputSchema: {},
     },
     async (_input, { authInfo }) => {
-      const userId = getUserId(authInfo);
-      const { achievementState } = await getGameState(userId);
-
-      const unlockedCount = achievementState.unlockedAchievements.length;
-      const totalCount = ACHIEVEMENTS.length;
+      const gameService = new GameService(authInfo);
+      const result = await gameService.getAchievements();
 
       return {
         content: [
           {
             type: 'text',
-            text: `You've unlocked ${unlockedCount} out of ${totalCount} achievements!`,
+            text: `You've unlocked ${result.unlockedCount} out of ${result.totalCount} achievements!`,
           },
         ],
         structuredContent: {
-          achievements: ACHIEVEMENTS,
-          unlockedAchievements: achievementState.unlockedAchievements,
+          achievements: result.achievements,
+          unlockedAchievements: result.unlockedAchievements,
         },
       };
     }
