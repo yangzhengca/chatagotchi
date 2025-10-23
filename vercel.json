@@ -1,7 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm -w run build",
-  "outputDirectory": "assets",
   "rewrites": [
     {
       "source": "/:path((?!widgets)(?!.*\\.).*)",
