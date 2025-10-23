@@ -8,14 +8,30 @@ This is "Chatagotchi" - a virtual pet game built as an MCP (Model Context Protoc
 
 ## Key Commands
 
+**Note:** This project uses pnpm workspaces. Ensure you have pnpm installed (`npm install -g pnpm`).
+
 ### Frontend (Widgets)
-- `npm run build` - Build all widgets to `assets/` directory (generates separate CSS/JS files per widget)
-- `npm run dev` - Start Vite dev server on port 4444
-- `npm run serve` - Serve built assets with CORS enabled
+- `pnpm run build` - Build all widgets to `assets/` directory (generates separate CSS/JS files per widget)
+- `pnpm run dev` - Start Vite dev server on port 4444 for local widget development
 
 ### Backend (MCP Server)
-- `cd mcp_server_node && npm start` - Start the MCP server (runs with tsx)
-- Server listens on port configured in `mcp_server_node/src/config.ts`
+- `pnpm run build:mcp` - Compile TypeScript for MCP server
+- `pnpm start:mcp` - Start the MCP server (runs with tsx)
+- Server listens on port configured via `MCP_HTTP_PORT` env variable (default: 8889)
+
+## Environment Variables
+
+### MCP Server (Required)
+- `STYTCH_PROJECT_ID` - Your Stytch project ID
+- `STYTCH_PROJECT_SECRET` - Your Stytch project secret
+- `STYTCH_DOMAIN` - Your Stytch domain URL
+- `FRONTEND_DOMAIN` - URL where widgets are hosted (e.g., `https://chatagotchi-jet.vercel.app`)
+- `MCP_HTTP_PORT` - Port for MCP server (optional, defaults to 8889)
+
+### Frontend Website (Required for OAuth flow)
+- `VITE_STYTCH_PUBLIC_TOKEN` - Your Stytch public token for client-side authentication
+
+Create a `.env` file in `mcp_server_node/` for local development.
 
 ## Architecture
 
@@ -66,6 +82,9 @@ This is "Chatagotchi" - a virtual pet game built as an MCP (Model Context Protoc
 - Built with Vite into separate bundles (configured in `vite.config.mts`)
 - Widgets use `useOpenAiGlobal('toolOutput')` hook to access `structuredContent` from MCP response
 - Widget entry points must be registered in `vite.config.mts` rollupOptions.input
+- Dev server runs on port 4444 with CORS enabled for local testing
+- Production widgets are served from Vercel with CORS headers (configured in `vercel.json`)
+- Widgets are hydrated by ChatGPT's Skybridge system using the `text/html+skybridge` MIME type
 
 ### MCP Tool Structure
 
@@ -88,8 +107,9 @@ Tools return:
 ### Adding New Widgets
 1. Create `widgets/your-widget/` with index.html, index.tsx, index.css, types.ts
 2. Add entry to `vite.config.mts` rollupOptions.input
-3. Register resource in `server.ts` with `server.registerResource()`
+3. Register resource in `server.ts` with `server.registerResource()` (must include CSS and JS references to `FRONTEND_DOMAIN`)
 4. Add tool that returns `_meta['openai/outputTemplate']` pointing to your widget URI
+5. Build widgets with `pnpm run build` and deploy to Vercel
 
 ### GameService Pattern
 - Always instantiate with `authInfo` in tool handlers: `new GameService(authInfo)`
@@ -103,6 +123,20 @@ Tools return:
 
 ## Deployment
 
-Frontend widgets are hosted on Vercel (configured in `vercel.json`). The MCP server references widget URLs via `https://chatagotchi-jet.vercel.app/{widget}.{css|js}` in resource definitions.
+### Frontend Widgets (Vercel)
+- Frontend widgets and OAuth website are hosted on Vercel
+- Configured in `vercel.json` with CORS headers enabled for ChatGPT access
+- The MCP server references widget URLs via `FRONTEND_DOMAIN` environment variable
+- Build output directory is `assets/` (contains .html, .css, .js files)
 
-For local testing, use ngrok to expose MCP server and add to ChatGPT Settings > Connectors.
+### MCP Server (Alpic)
+- MCP server is hosted on Alpic (or can be self-hosted)
+- Requires all environment variables from the "Environment Variables" section
+- Build command: `pnpm run build:mcp`
+- Start command: `pnpm run --silent start:mcp`
+
+### Local Development
+- Run `pnpm run dev` for widget development (hot reload on port 4444)
+- Run `pnpm start:mcp` for MCP server (requires .env file in `mcp_server_node/`)
+- For local MCP testing in ChatGPT, use ngrok or similar tunneling service to expose the MCP endpoint
+- Add the exposed URL to ChatGPT Settings > Connectors

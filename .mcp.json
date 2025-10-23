@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "biggeo": {
+      "type": "http",
+      "url": "https://chatagotchi-9f494189.alpic.live/"
+    }
+  }
+}

@@ -4,7 +4,7 @@ import { z } from 'zod';
 dotenv.config();
 
 const EnvSchema = z.object({
-  MCP_HTTP_PORT: z.coerce.number().int().positive().default(3000),
+  MCP_HTTP_PORT: z.coerce.number().int().positive().default(8889),
   STYTCH_PROJECT_ID: z.string(),
   STYTCH_PROJECT_SECRET: z.string(),
   STYTCH_DOMAIN: z.string().url(),
