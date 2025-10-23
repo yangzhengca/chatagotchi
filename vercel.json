@@ -1,12 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "assets",
   "rewrites": [
     {
       "source": "/:path((?!widgets)(?!.*\\.).*)",
       "destination": "/index.html"
     }
   ],
-  "outputDirectory": "./assets",
   "headers": [
     {
       "source": "/(.*)",
