@@ -5,7 +5,7 @@ export default function Home() {
   const { user } = useStytchUser();
   return (
     <div className="space-y-4">
-      <h1 className="text-4xl font-bold mb-6">🐣 Chatagotchi Demo</h1>
+      <h1 className="text-4xl font-bold mb-6">BigGeo MCP Server Demo</h1>
       <p className="text-gray-500">
         {user && (
           <>
@@ -16,60 +16,28 @@ export default function Home() {
         {!user && <> You are not logged in</>}
       </p>
       <p className="text-lg">
-        This is the homepage for the Chatagotchi demo - a little interactive pet
-        in your ChatGPT using the{' '}
+        Welcome to the BigGeo MCP Demo — a showcase of cutting-edge Geospatial AI capabilities powered by{' '}
         <a
-          href="https://developers.openai.com/apps-sdk"
+          href="https://biggeo.com"
           className="text-blue-600 hover:underline"
         >
-          Apps SDK
+          BigGeo
         </a>
         .
       </p>
       <div>
         <p className="text-lg font-semibold mb-2">
-          This demo consists of several parts:
+          This demo highlights how advanced location intelligence and data analytics can deliver actionable insights from real-world geospatial data.
         </p>
         <ul className="list-disc list-inside space-y-1 ml-4">
           <li>
-            A classic web application (where you are now!) that handles User
-            registration and OAuth consent management using{' '}
-            <a
-              href="https://stytch.com"
-              className="text-blue-600 hover:underline"
-            >
-              Stytch
-            </a>
-            .
+            Brand-Level Insights: Retrieve foot traffic data (visitor counts, etc.) for all locations of a brand within a geographic area.
           </li>
           <li>
-            A MCP Server running on{' '}
-            <a
-              href="https://alpic.ai"
-              className="text-blue-600 hover:underline"
-            >
-              Alpic
-            </a>
-            .
-          </li>
-          <li>
-            Multiple UI widget "microfrontends" hosted on{' '}
-            <a
-              href="https://vercel.com"
-              className="text-blue-600 hover:underline"
-            >
-              Vercel
-            </a>{' '}
-            that can be referenced by ChatGPT chats.
+           Business-Level Insights: Get visitor counts and other metrics for a specific business, or find and compare foot traffic metrics for similar nearby businesses within a given radius.
           </li>
         </ul>
       </div>
-      <p className="text-lg">
-        Tools exposed by the MCP Server will return{' '}
-        <code className="bg-gray-100 px-2 py-1 rounded">structuredContent</code>{' '}
-        that can be rendered by the UI widgets to create rich interactive
-        experiences.
-      </p>
       <div>
         <p className="text-lg font-semibold mb-2">To use this demo:</p>
         <ul className="list-disc list-inside space-y-1 ml-4">

@@ -5,9 +5,7 @@
   "main": "host/main.ts",
   "scripts": {
     "build": "vite build --config vite.config.mts",
-    "dev": "vite dev --config vite.config.mts",
-    "build:mcp": "tsc -p tsconfig.node.json",
-    "start:mcp": "pnpm --filter mcp_server_node run start"
+    "dev": "vite dev --config vite.config.mts"
   },
   "keywords": [],
   "author": "",

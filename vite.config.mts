@@ -45,8 +45,6 @@ export default defineConfig(({}) => ({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        pet: resolve(__dirname, 'widgets/pet/index.html'),
-        achievements: resolve(__dirname, 'widgets/achievements/index.html'),
       },
       preserveEntrySignatures: 'strict',
       output: {

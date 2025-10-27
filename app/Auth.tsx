@@ -137,7 +137,7 @@ export const Authorize = withLoginRequired(function () {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-8">
-        <div className="text-8xl animate-spin">🐣</div>
+        {/* <div className="text-8xl animate-spin">🐣</div> */}
         <p className="mt-4 text-xl text-gray-600">
           Loading authorization request...
         </p>
@@ -163,24 +163,24 @@ export const Authorize = withLoginRequired(function () {
     );
   }
 
-  const pets = ['🐣', '🐱', '🐶', '🦎', '🐟'];
+  // const pets = ['🐣', '🐱', '🐶', '🦎', '🐟'];
 
   return (
     <div className="relative p-8 overflow-hidden">
       {/* Consent Card */}
       <div className="relative max-w-2xl mx-auto bg-white rounded-3xl p-8 border-4 border-purple-200">
         <div className="text-center mb-6">
-          <div className="text-7xl mb-4 overflow-hidden whitespace-nowrap">
+          {/* <div className="text-7xl mb-4 overflow-hidden whitespace-nowrap">
             <div className="inline-block animate-marquee">
               {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}{' '}
               {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}
             </div>
-          </div>
+          </div> */}
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             {authInfo?.client_name || 'ChatGPT'} wants to connect!
           </h1>
           <p className="text-lg text-gray-600">
-            Allow access to your Chatagotchi pets
+            Allow access to your BigGeo MCP Server account
           </p>
         </div>
 
@@ -192,17 +192,17 @@ export const Authorize = withLoginRequired(function () {
           </h2>
           <ul className="space-y-3">
             <li className="flex items-start">
-              <span className="text-2xl mr-3">🍎</span>
-              <div>
+              {/* <span className="text-2xl mr-3">🍎</span> */}
+              <div className='ml-5'>
                 <div className="font-semibold text-gray-800">
-                  Feed your pets
+                  Access your email address
                 </div>
                 <div className="text-sm text-gray-600">
-                  Keep them well-fed and happy
+                  We'll use this to send you important updates
                 </div>
               </div>
             </li>
-            <li className="flex items-start">
+            {/* <li className="flex items-start">
               <span className="text-2xl mr-3">🎮</span>
               <div>
                 <div className="font-semibold text-gray-800">
@@ -223,7 +223,7 @@ export const Authorize = withLoginRequired(function () {
                   View your collection progress
                 </div>
               </div>
-            </li>
+            </li> */}
           </ul>
         </div>
 
@@ -247,7 +247,7 @@ export const Authorize = withLoginRequired(function () {
 
         {/* Footer */}
         <p className="mt-6 text-center text-sm text-gray-500">
-          Your pets are in safe hands! 🐾 We'll never share your data without
+          Your data is safe! We'll never share your data without
           permission.
         </p>
       </div>
