@@ -4,139 +4,152 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is "Chatagotchi" - a virtual pet game built as an MCP (Model Context Protocol) server with OpenAI Apps SDK widgets. The game runs inside ChatGPT where users raise virtual pets through feeding and playing actions, with an achievement system tracking their progress.
+This is a frontend-only Single Page Application (SPA) for the **BigGeo MCP Server Demo**. It serves as:
+1. A marketing/demo website showcasing BigGeo's geospatial AI capabilities (foot traffic analytics, location intelligence)
+2. An OAuth Authorization Server for Stytch Connected Apps
+3. A frontend portal to connect ChatGPT to an external MCP server
+
+**Note**: This repository is on the `front-end-only` branch. Previous versions included an MCP server (`mcp_server_node/`), widgets (`widgets/`), and shared types, but these have been removed in favor of a pure frontend implementation.
 
 ## Key Commands
 
-**Note:** This project uses pnpm workspaces. Ensure you have pnpm installed (`npm install -g pnpm`).
+**Note:** This project uses pnpm. Ensure you have pnpm installed (`npm install -g pnpm`).
 
-### Frontend (Widgets)
-- `pnpm run build` - Build all widgets to `assets/` directory (generates separate CSS/JS files per widget)
-- `pnpm run dev` - Start Vite dev server on port 4444 for local widget development
-
-### Backend (MCP Server)
-- `pnpm run build:mcp` - Compile TypeScript for MCP server
-- `pnpm start:mcp` - Start the MCP server (runs with tsx)
-- Server listens on port configured via `MCP_HTTP_PORT` env variable (default: 8889)
+- `pnpm run build` - Build application to `assets/` directory for production deployment
+- `pnpm run dev` - Start Vite dev server on port 4444 with hot reload
 
 ## Environment Variables
 
-### MCP Server (Required)
-- `STYTCH_PROJECT_ID` - Your Stytch project ID
-- `STYTCH_PROJECT_SECRET` - Your Stytch project secret
-- `STYTCH_DOMAIN` - Your Stytch domain URL
-- `FRONTEND_DOMAIN` - URL where widgets are hosted (e.g., `https://chatagotchi-jet.vercel.app`)
-- `MCP_HTTP_PORT` - Port for MCP server (optional, defaults to 8889)
+Create a `.env` file in the project root with:
 
-### Frontend Website (Required for OAuth flow)
-- `VITE_STYTCH_PUBLIC_TOKEN` - Your Stytch public token for client-side authentication
+- `VITE_STYTCH_PUBLIC_TOKEN` - Your Stytch public token for client-side authentication (required)
+- `VITE_APLIC_MCP_URL` - URL to the external BigGeo MCP Server (optional, used for display in Home page instructions)
 
-Create a `.env` file in `mcp_server_node/` for local development.
+See `.env.template` for reference.
 
 ## Architecture
 
-### Three-Layer System
+### Single Page Application (SPA)
 
-**1. MCP Server (`mcp_server_node/src/`)**
-- `server.ts` - MCP tool definitions (thin controllers)
-- `game-service.ts` - Business logic layer encapsulating game state management
-- `game-logic.ts` - Pure functions for game mechanics (stat changes, lifecycle, achievements)
-- `stytch.ts` - User authentication and metadata persistence
-- `index.ts` - Express server with Stytch OAuth + MCP endpoint
+This is a React SPA using React Router for client-side routing. The application handles:
+- User authentication via Stytch (Email OTP + Google OAuth)
+- OAuth authorization flow for ChatGPT MCP connections
+- Display of demo instructions for connecting to the BigGeo MCP server
 
-**2. Shared Types (`shared-types/`)**
-- `game-types.ts` - Single source of truth for types used by both backend and frontend
-- Exports: `PetState`, `PetSpecies`, `PetLifecycleState`, `Achievement`, `AchievementState`, `ACHIEVEMENTS`, `SPECIES_EMOJIS`
-- Imported by both MCP server and widget code
+### Entry Points & Key Files
 
-**3. Frontend Widgets (`widgets/`)**
-- `pet/` - Main pet display widget (shows stats, lifecycle stage, action buttons)
-- `achievements/` - Achievement gallery widget (shows locked/unlocked achievements)
-- `utils/` - Shared React hooks (`useOpenAiGlobal`, `useWidgetState`, etc.)
+- **`index.html`** - Main HTML template, references `/app/main.tsx`
+- **`app/main.tsx`** - React entry point, renders root component
+- **`app/App.tsx`** - Main app component with StytchProvider and React Router setup
+- **`app/Home.tsx`** - Landing page with BigGeo demo description and connection instructions
+- **`app/Auth.tsx`** - Authentication components and HOC:
+  - `Login` - Email OTP and Google OAuth login page
+  - `Authorize` - OAuth consent screen for apps requesting access
+  - `Authenticate` - OAuth callback handler
+  - `Logout` - Session revocation button
+  - `withLoginRequired` - HOC to protect routes requiring authentication
+- **`app/index.css`** - Global styles with Tailwind imports
 
-### Data Flow
+### Technology Stack
 
-1. **ChatGPT** calls MCP tool (e.g., `pet-feed`)
-2. **server.ts** instantiates `GameService` with user auth
-3. **GameService** reads game state from Stytch metadata, applies action via `game-logic.ts`, checks achievements, saves state
-4. **GameService** returns `{ petState, newAchievements, message }` to server
-5. **server.ts** returns response with `structuredContent` and `_meta['openai/outputTemplate']` pointing to widget
-6. **ChatGPT** renders widget HTML, hydrates with `structuredContent` via Skybridge
+- **React 19.1.1** - UI library
+- **React Router 7.8.2** - Client-side routing
+- **Stytch** (`@stytch/react`, `@stytch/vanilla-js`) - Authentication and OAuth
+- **Tailwind CSS 4.1.11** - Styling via `@tailwindcss/vite` plugin
+- **Vite 7.1.1** - Build tool and dev server
+- **TypeScript 5.9.2** - Type safety
+- **Zod 4.1.5** - Schema validation
 
-### Game State Storage
+### Routing Structure
 
-- **Pet state** - Stored per-game in `userMetadata.petState` (wiped on new game)
-- **Achievement state** - Persistent across games in `userMetadata.achievementState`
-- Both managed together by `GameService.getGameState()` / `saveGameState()`
+- `/` - Home page (redirects to `/home`)
+- `/home` - Landing page with demo instructions
+- `/login` - Login page (Email OTP + Google OAuth)
+- `/authenticate` - OAuth callback handler
+- `/oauth/authorize` - OAuth consent screen (protected route)
+- `*` - Catch-all redirects to `/home`
 
-### Game Mechanics
+## Stytch Authentication
 
-- Pet has 3 stats: stamina, happiness, health (0-100 scale, die if any drops below 20)
-- 4 food options, 3 play activities (each affects stats differently)
-- Lifecycle: BABY → CHILD → ADULT → COMPLETE (based on turn count)
-- 11 discovery achievements: 5 species completions, 6 death types (including secret deaths like skiing crash and overeating)
+### Setup
+- StytchUIClient is instantiated in `app/App.tsx` with `VITE_STYTCH_PUBLIC_TOKEN`
+- All components are wrapped in `<StytchProvider>`
+- Use `useStytchUser()` hook to access current user info
+- Use `useStytch()` hook to access Stytch client methods
 
-### Widget System
+### Authentication Flow
+1. User navigates to protected route (e.g., `/oauth/authorize`)
+2. `withLoginRequired` HOC checks if user is logged in
+3. If not logged in, saves current URL to localStorage and redirects to `/login`
+4. After successful login, `onLoginComplete()` redirects back to saved URL
+5. Session is managed via Stytch, can be revoked with `stytch.session.revoke()`
 
-- Each widget has `index.html`, `index.tsx`, `index.css`, `types.ts`
-- Built with Vite into separate bundles (configured in `vite.config.mts`)
-- Widgets use `useOpenAiGlobal('toolOutput')` hook to access `structuredContent` from MCP response
-- Widget entry points must be registered in `vite.config.mts` rollupOptions.input
-- Dev server runs on port 4444 with CORS enabled for local testing
-- Production widgets are served from Vercel with CORS headers (configured in `vercel.json`)
-- Widgets are hydrated by ChatGPT's Skybridge system using the `text/html+skybridge` MIME type
+### OAuth Flow (for ChatGPT MCP)
+1. ChatGPT redirects user to `/oauth/authorize?client_id=...&redirect_uri=...&state=...`
+2. User must be logged in (enforced by `withLoginRequired`)
+3. Consent screen displays app details and requested permissions
+4. On approval, redirects to ChatGPT callback URL with authorization code
+5. ChatGPT exchanges code for access token via Stytch
 
-### MCP Tool Structure
+## Build & Development
 
-Tools return:
-```typescript
-{
-  content: [{ type: 'text', text: 'User-facing message' }],
-  structuredContent: { petState, lastAction, ... }, // Data for widget
-  _meta: { 'openai/outputTemplate': 'ui://widget/pet.html' }
-}
+### Development Server
+```bash
+pnpm run dev
 ```
+- Runs on `http://localhost:4444`
+- CORS enabled for cross-origin requests
+- Custom middleware rewrites `/widgets/*` paths to `/widgets/*/index.html` (legacy from previous architecture)
 
-## Important Patterns
+### Production Build
+```bash
+pnpm run build
+```
+- Outputs to `assets/` directory
+- Single entry point: `index.html`
+- Generates `main.js`, `main.css`, and `index.html`
+- Source maps enabled
+- Asset naming: `[name].js`, `[name].css`, `[name].[ext]`
 
-### Adding New Types
-- Define in `shared-types/game-types.ts`
-- Import in both `mcp_server_node/src/game-logic.ts` and widget type files
-- Never duplicate type definitions
-
-### Adding New Widgets
-1. Create `widgets/your-widget/` with index.html, index.tsx, index.css, types.ts
-2. Add entry to `vite.config.mts` rollupOptions.input
-3. Register resource in `server.ts` with `server.registerResource()` (must include CSS and JS references to `FRONTEND_DOMAIN`)
-4. Add tool that returns `_meta['openai/outputTemplate']` pointing to your widget URI
-5. Build widgets with `pnpm run build` and deploy to Vercel
-
-### GameService Pattern
-- Always instantiate with `authInfo` in tool handlers: `new GameService(authInfo)`
-- Use public methods: `startNewGame()`, `feedPet()`, `playWithPet()`, `getAchievements()`
-- GameService handles ALL state persistence - don't call Stytch directly from server.ts
-
-### Authentication
-- MCP server requires Stytch OAuth bearer tokens
-- `STYTCH_DOMAIN`, `STYTCH_PROJECT_ID`, `STYTCH_SECRET` must be set in env
-- User ID extracted from `authInfo.extra.subject`
+### Vite Configuration (`vite.config.mts`)
+- Plugins: `@tailwindcss/vite`, `@vitejs/plugin-react`
+- Target: ES2022
+- Dev server: port 4444, strict mode, CORS enabled
+- Build: minified with esbuild, sourcemaps enabled
 
 ## Deployment
 
-### Frontend Widgets (Vercel)
-- Frontend widgets and OAuth website are hosted on Vercel
-- Configured in `vercel.json` with CORS headers enabled for ChatGPT access
-- The MCP server references widget URLs via `FRONTEND_DOMAIN` environment variable
-- Build output directory is `assets/` (contains .html, .css, .js files)
+### Vercel (Current Hosting)
+- Configured in `vercel.json`
+- Build command: `pnpm -w run build`
+- Output directory: `assets/`
+- Install command: `pnpm install`
+- Framework: null (custom SPA setup)
+- CORS headers enabled for all routes (`Access-Control-Allow-Origin: *`)
+- Rewrites: All non-asset paths redirect to `index.html` for SPA routing
 
-### MCP Server (Alpic)
-- MCP server is hosted on Alpic (or can be self-hosted)
-- Requires all environment variables from the "Environment Variables" section
-- Build command: `pnpm run build:mcp`
-- Start command: `pnpm run --silent start:mcp`
+### Environment Variables in Vercel
+Set `VITE_STYTCH_PUBLIC_TOKEN` in Vercel environment variables dashboard.
 
-### Local Development
-- Run `pnpm run dev` for widget development (hot reload on port 4444)
-- Run `pnpm start:mcp` for MCP server (requires .env file in `mcp_server_node/`)
-- For local MCP testing in ChatGPT, use ngrok or similar tunneling service to expose the MCP endpoint
-- Add the exposed URL to ChatGPT Settings > Connectors
+## Important Patterns
+
+### TypeScript Configuration
+- **`tsconfig.json`** - Root config with references to app and node configs
+- **`tsconfig.app.json`** - App code config (ES2022 target, strict mode, React JSX)
+- **`tsconfig.node.json`** - Build tool config (ES2023 target, bundler resolution)
+
+### Styling
+- Tailwind CSS with custom utilities (scrollbar styling in `app/index.css`)
+- Font: IBM Plex Sans monospace
+- Responsive layout with max-width constraints
+- Custom scrollbar colors: `scrollbar-track-gray-100`, `scrollbar-thumb-gray-400`
+
+### File Naming
+- React components: PascalCase (e.g., `Home.tsx`, `Auth.tsx`)
+- Config files: kebab-case (e.g., `vite.config.mts`, `tailwind.config.ts`)
+
+## Legacy Code
+The following are remnants from the previous Chatagotchi game architecture and can be ignored or removed:
+- Widget HTML middleware in `vite.config.mts` (no longer needed, no widgets exist)
+- `/widgets/` route handling (directory has been deleted)
+- References to "Chatagotchi" in comments or old documentation

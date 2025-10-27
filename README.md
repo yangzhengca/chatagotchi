@@ -1,123 +1,88 @@
-# Chatagotchi - OpenAI ChatGPT Apps SDK Demo
+# BigGeo MCP Server Demo
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-<table>
-<tr>
-<td><img src="chatagotchi.png" alt="Chatagotchi" width="300"></td>
-<td>
+A frontend demo application showcasing [BigGeo](https://biggeo.com)'s cutting-edge Geospatial AI capabilities. This Single Page Application (SPA) serves as an OAuth authorization server and marketing portal for connecting ChatGPT to the BigGeo MCP server.
 
-A virtual pet game built with the Model Context Protocol (MCP) and OpenAI [Apps SDK](https://developers.openai.com/apps-sdk/). Raise pets, unlock achievements, and experience the nostalgia of digital companions—all inside ChatGPT.
-Built with [Stytch](https://stytch.com), [Alpic](https://alpic.ai), and [Vercel](https://vercel/com). 
-</td>
-</tr>
-</table>
+Built with [Stytch](https://stytch.com) for authentication and deployed on [Vercel](https://vercel.com).
 
-<div>
-    <a href="https://www.loom.com/share/eef58ead11f644c5a6a3ad30cb7279fc">
-      <p>Building an Interactive ChatGPT Game with Stytch and Alpic - Watch Video</p>
-    </a>
-    <a href="https://www.loom.com/share/eef58ead11f644c5a6a3ad30cb7279fc">
-      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/eef58ead11f644c5a6a3ad30cb7279fc-39ee3aec7635a91d-full-play.gif">
-    </a>
-  </div>
+## What is BigGeo MCP?
 
-## What is Chatagotchi?
+BigGeo MCP provides advanced location intelligence and data analytics through ChatGPT. Users can:
 
-Chatagotchi is an MCP server that brings interactive pet care to ChatGPT using the Apps SDK. Users can:
-
-- 🐣 Start a new game and raise different kinds of pets (bird, cat, dog, lizard, or fish)
-- 🍎 Feed their pet with different foods (apples, cookies, salad, pizza)
-- 🎮 Play activities (video games, running, skiing)
-- 🏆 Unlock 11 discovery achievements
+- 🏢 **Brand-Level Insights** - Retrieve foot traffic data (visitor counts, etc.) for all locations of a brand within a geographic area
+- 🏪 **Business-Level Insights** - Get visitor counts and other metrics for specific businesses, or find and compare foot traffic for similar nearby businesses within a given radius
 
 ## Architecture
 
-Chatagotchi uses a three-layer architecture:
+This is a React-based Single Page Application that handles:
 
-### MCP Server (`mcp_server_node/`)
-Node.js/TypeScript server that exposes game tools via the Model Context Protocol. Built with:
-- **Controllers** (`server.ts`) - MCP tool definitions for ChatGPT integration
-- **Business Logic** (`game-service.ts`) - Game state management and message generation
-- **Game Mechanics** (`game-logic.ts`) - Pure functions for pet actions, lifecycle, and achievements
-- **Authentication** - Stytch Connected Apps for MCP authentication
+### Frontend Website (`app/`)
+A React SPA built with React Router and Stytch authentication:
+- **Marketing Portal** - Landing page with demo instructions and BigGeo capabilities
+- **OAuth Authorization Server** - Handles ChatGPT MCP authentication flow
+- **User Management** - Login, logout, and session management via Stytch
 
-### Website (`app/`)
-A traditional React SPA responsible for marketing, user signup, and OAuth authorization.
-- Hosted as standalone website on Vercel
-- Functions as an OAuth Authorization Server
-
-### Frontend Widgets (`widgets/`)
-React components rendered inside ChatGPT via the Apps SDK:
-- **Pet Widget** - Displays pet emoji, name, stats, lifecycle stage, and action buttons
-- **Achievements Widget** - Gallery of locked/unlocked achievements with progress tracking
-- **Utilities** - Shared hooks for accessing OpenAI global context and widget state
+Built with:
+- React 19.1.1 + React Router 7.8.2
+- Stytch for OAuth and authentication
+- Tailwind CSS for styling
+- Vite for bundling and development
 
 ## Prerequisites
 
 - Node.js 18+
 - pnpm (recommended) or npm/yarn
-- Stytch, Alpic, and Vercel accounts
+- Stytch and Vercel accounts
 
 ## Deployment
 
-Fork the repository in Github so you can connect your personal repository to Vercel and Alpic.
+Fork the repository in GitHub so you can connect your personal repository to Vercel.
 
 ### Vercel Setup
 1. Create a Vercel account at https://vercel.com/
-2. Grant Vercel access to your forked repository, and deploy it
-3. Remember your Vercel domain, which will look like `https://chatagotchi-$adjective.vercel.app`
+2. Grant Vercel access to your forked repository and deploy it
+3. Remember your Vercel domain, which will look like `https://your-app-name.vercel.app`
 
 ### Stytch Setup
 
 1. Create a Stytch account at https://stytch.com
 2. Create a "Consumer" project and get your credentials from the Project Overview page
-   - You'll need the `STYTCH_PROJECT_ID`, `STYTCH_SECRET`, `STYTCH_DOMAIN`, and `STYTCH_PUBLIC_TOKEN` for later
+   - You'll need the `STYTCH_PROJECT_ID`, `STYTCH_SECRET`, `STYTCH_DOMAIN`, and `STYTCH_PUBLIC_TOKEN`
 3. Navigate to Frontend SDK
-   - Enable the Javascript SDK, and add your Vercel domain as an approved domain
+   - Enable the JavaScript SDK and add your Vercel domain as an approved domain
 4. Navigate to Connected Apps > Settings
    - Enable Dynamic Client Registration
    - Set `${VERCEL_DOMAIN}/oauth/authorize` as your project Authorization URL
-5. Return to Vercel. Set your `STYTCH_PUBLIC_TOKEN` as a `VITE_STYTCH_PUBLIC_TOKEN` environment variable
+5. Return to Vercel and set `VITE_STYTCH_PUBLIC_TOKEN` as an environment variable with your Stytch public token
 
-### Alpic Setup
+### Environment Variables
 
-1. Create an Alpic account at https://alpic.ai
-2. Grant Alpic access to your forked repository
-3. Configure the following build settings:
-   - Build Command: `pnpm run build:mcp` 
-   - Output Directory: `./`
-   - Start Command: `pnpm run --silent start:mcp`
-4. Configure the following environment variables:
-   - `STYTCH_PROJECT_ID` - your project ID from Stytch
-   - `STYTCH_PROJECT_SECRET` - your project secret from Stytch
-   - `STYTCH_DOMAIN` - your project domain from Stytch
-   - `FRONTEND_DOMAIN` - your Vercel Domain
-5. Redeploy the MCP server to ensure all settings have been applied
+Create a `.env` file in the project root (see `.env.template`):
+
+```bash
+VITE_STYTCH_PUBLIC_TOKEN=your-stytch-public-token
+VITE_APLIC_MCP_URL=https://your-mcp-server.alpic.live  # Optional, for display purposes
+```
 
 ## Testing in ChatGPT
 
-To add Chatagotchi to ChatGPT:
+To connect the BigGeo MCP server to ChatGPT:
 
 1. Enable [developer mode](https://platform.openai.com/docs/guides/developer-mode)
-2. Add the ngrok URL to ChatGPT: **Settings > Connectors**
-   - Use the MCP endpoint: `https://chatagotchi-xxxxx.alpic.live`
+2. Add the MCP server URL to ChatGPT: **Settings > Connectors**
+   - Use your MCP endpoint (e.g., `https://biggeo-mcp.alpic.live`)
+3. ChatGPT will redirect you to the OAuth authorization page to grant access
 
-Once connected, try saying "Let's start a brand new chatagotchi game" to get started.
+Once connected, you can ask ChatGPT questions like:
+- "What's the foot traffic for Starbucks locations in San Francisco?"
+- "Find businesses similar to [business name] within 2 miles"
 
 ## Local Development
 
-### Build the Frontend Widgets
+### Run Development Server
 
-Build widgets into static assets for deployment:
-
-```bash
-pnpm run build
-```
-
-This produces versioned `.html`, `.js`, and `.css` files in `assets/`. Each widget is self-contained with its own styles.
-
-For local development with hot reload:
+Start the Vite dev server with hot reload:
 
 ```bash
 pnpm run dev
@@ -125,17 +90,35 @@ pnpm run dev
 
 The dev server runs on `http://localhost:4444`
 
-### Run the MCP Server
+### Build for Production
 
-Start the MCP server:
+Build the application for deployment:
 
 ```bash
-pnpm start:mcp
+pnpm run build
+```
+
+This produces optimized static assets in the `assets/` directory, ready for deployment to Vercel.
+
+## Project Structure
+
+```
+app/
+├── main.tsx          # React entry point
+├── App.tsx           # Main app with routing and Stytch provider
+├── Home.tsx          # Landing page with demo instructions
+├── Auth.tsx          # Login, OAuth, and authentication components
+└── index.css         # Global styles with Tailwind imports
+
+assets/               # Build output directory
+index.html            # Main HTML template
+vite.config.mts       # Vite configuration
+vercel.json           # Vercel deployment configuration
 ```
 
 ## Contributing
 
-Contributions are welcome! Open an issue or submit a PR to improve the game.
+Contributions are welcome! Open an issue or submit a PR to improve the application.
 
 ## License
 
