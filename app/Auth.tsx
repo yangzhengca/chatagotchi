@@ -8,6 +8,7 @@ import {
 } from '@stytch/vanilla-js';
 import { StytchLogin, useStytch, useStytchUser } from '@stytch/react';
 import { useEffect, useMemo, useState } from 'react';
+import { CustomLogin } from './CustomLogin';
 
 /**
  * A higher-order component that enforces a login requirement for the wrapped component.
@@ -74,12 +75,13 @@ export function Login() {
     onLoginComplete();
   };
 
-  return (
+  return <>
     <StytchLogin
       config={loginConfig}
       callbacks={{ onEvent: handleOnLoginComplete }}
     />
-  );
+    <CustomLogin />
+  </>;
 }
 
 /**
@@ -163,19 +165,11 @@ export const Authorize = withLoginRequired(function () {
     );
   }
 
-  // const pets = ['🐣', '🐱', '🐶', '🦎', '🐟'];
-
   return (
     <div className="relative p-8 overflow-hidden">
       {/* Consent Card */}
       <div className="relative max-w-2xl mx-auto bg-white rounded-3xl p-8 border-4 border-purple-200">
         <div className="text-center mb-6">
-          {/* <div className="text-7xl mb-4 overflow-hidden whitespace-nowrap">
-            <div className="inline-block animate-marquee">
-              {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}{' '}
-              {pets.join(' ')} {pets.join(' ')} {pets.join(' ')}
-            </div>
-          </div> */}
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             {authInfo?.client_name || 'ChatGPT'} wants to connect!
           </h1>
@@ -192,7 +186,6 @@ export const Authorize = withLoginRequired(function () {
           </h2>
           <ul className="space-y-3">
             <li className="flex items-start">
-              {/* <span className="text-2xl mr-3">🍎</span> */}
               <div className='ml-5'>
                 <div className="font-semibold text-gray-800">
                   Access your email address
@@ -202,28 +195,6 @@ export const Authorize = withLoginRequired(function () {
                 </div>
               </div>
             </li>
-            {/* <li className="flex items-start">
-              <span className="text-2xl mr-3">🎮</span>
-              <div>
-                <div className="font-semibold text-gray-800">
-                  Play with your pets
-                </div>
-                <div className="text-sm text-gray-600">
-                  Help them exercise and have fun
-                </div>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <span className="text-2xl mr-3">🏆</span>
-              <div>
-                <div className="font-semibold text-gray-800">
-                  Track achievements
-                </div>
-                <div className="text-sm text-gray-600">
-                  View your collection progress
-                </div>
-              </div>
-            </li> */}
           </ul>
         </div>
 
@@ -251,21 +222,6 @@ export const Authorize = withLoginRequired(function () {
           permission.
         </p>
       </div>
-
-      {/* CSS Animation */}
-      <style>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-33.333%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee 10s linear infinite;
-        }
-      `}</style>
     </div>
   );
 });
@@ -294,11 +250,19 @@ export const Logout = function () {
   const { user } = useStytchUser();
 
   if (!user) return null;
+  const handleLogout = () => {
+    localStorage.setItem('app_jwt', ""); // Your app JWT
+    localStorage.setItem('stytch_session', ""); // Stytch jwt
+    localStorage.setItem('returnTo', "");
+    localStorage.setItem('user', "");
+    stytch.session.revoke();
+
+  };
 
   return (
     <button
       className="ml-2 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 underline"
-      onClick={() => stytch.session.revoke()}
+      onClick={handleLogout}
     >
       Log Out
     </button>

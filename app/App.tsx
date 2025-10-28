@@ -1,22 +1,19 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { StytchProvider } from '@stytch/react';
-import { StytchUIClient } from '@stytch/vanilla-js';
 import Home from './Home';
 import { Login, Authorize, Authenticate } from './Auth';
-
-const stytch = new StytchUIClient(
-  import.meta.env.VITE_STYTCH_PUBLIC_TOKEN ?? ''
-);
+import StytchProvider from './StytchProvider';
+import { AuthorizePage } from './AuthorizePage';
 
 function App() {
   return (
-    <StytchProvider stytch={stytch}>
+    <StytchProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/authenticate" element={<Authenticate />} />
-          <Route path="/oauth/authorize" element={<Authorize />} />
+          {/* <Route path="/oauth/authorize" element={<Authorize />} /> */}
+          <Route path="/oauth/authorize" element={<AuthorizePage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
