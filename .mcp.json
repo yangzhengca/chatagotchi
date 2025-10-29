@@ -9,7 +9,7 @@
     },
     "biggeo": {
       "type": "http",
-      "url": "https://chatagotchi-9f494189.alpic.live/"
+      "url": "http://localhost:8888"
     }
   }
 }
