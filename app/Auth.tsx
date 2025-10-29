@@ -61,32 +61,32 @@ export const redirectToLogin = (returnState: string) => {
  * View all configuration options at https://stytch.com/docs/sdks/ui-configuration
  */
 export function Login() {
-  const loginConfig = useMemo<StytchLoginConfig>(
-    () => ({
-      products: [Products.otp, Products.oauth],
-      otpOptions: {
-        expirationMinutes: 10,
-        methods: [OTPMethods.Email],
-      },
-      oauthOptions: {
-        providers: [{ type: OAuthProviders.Google }],
-        loginRedirectURL: window.location.origin + '/authenticate',
-        signupRedirectURL: window.location.origin + '/authenticate',
-      },
-    }),
-    []
-  );
+  // const loginConfig = useMemo<StytchLoginConfig>(
+  //   () => ({
+  //     products: [Products.otp, Products.oauth],
+  //     otpOptions: {
+  //       expirationMinutes: 10,
+  //       methods: [OTPMethods.Email],
+  //     },
+  //     oauthOptions: {
+  //       providers: [{ type: OAuthProviders.Google }],
+  //       loginRedirectURL: window.location.origin + '/authenticate',
+  //       signupRedirectURL: window.location.origin + '/authenticate',
+  //     },
+  //   }),
+  //   []
+  // );
 
-  const handleOnLoginComplete = (evt: StytchEvent) => {
-    if (evt.type !== 'AUTHENTICATE_FLOW_COMPLETE') return;
-    onLoginComplete();
-  };
+  // const handleOnLoginComplete = (evt: StytchEvent) => {
+  //   if (evt.type !== 'AUTHENTICATE_FLOW_COMPLETE') return;
+  //   onLoginComplete();
+  // };
 
   return <>
-    <StytchLogin
+    {/* <StytchLogin
       config={loginConfig}
       callbacks={{ onEvent: handleOnLoginComplete }}
-    />
+    /> */}
     <CustomLogin />
   </>;
 }

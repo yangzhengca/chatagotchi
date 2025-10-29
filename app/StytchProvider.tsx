@@ -10,6 +10,8 @@ export const stytch = new StytchUIClient(
 
 export const profileId = import.meta.env.VITE_STYTCH_PROFILE_ID ?? ''
 
+export const authServerUrl = import.meta.env.VITE_AUTH_SERVER_URL ?? '';
+
 const StytchProvider = ({ children }: { children: ReactNode }) => {
   return <ProviderActual stytch={stytch}>{children}</ProviderActual>;
 };
