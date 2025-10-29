@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
+import { authServerUrl } from './StytchProvider';
 
-const AUTH_SERVER_URL = 'http://localhost:3001';
+// const AUTH_SERVER_URL = 'http://localhost:3001';
 
 interface GenLoginCodeResponse {
   email: string;
@@ -22,7 +23,7 @@ interface VerifyTokenResponse {
 }
 
 const api = axios.create({
-  baseURL: AUTH_SERVER_URL,
+  baseURL: authServerUrl,
   headers: {
     'Content-Type': 'application/json',
   },
