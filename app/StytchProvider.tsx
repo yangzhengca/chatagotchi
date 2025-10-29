@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { StytchProvider as ProviderActual } from '@stytch/react';
 import { StytchUIClient } from '@stytch/vanilla-js';
 
-const stytch = new StytchUIClient(
+export const stytch = new StytchUIClient(
   import.meta.env.VITE_STYTCH_PUBLIC_TOKEN ?? ''
 );
 

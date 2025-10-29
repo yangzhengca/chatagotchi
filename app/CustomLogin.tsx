@@ -1,27 +1,19 @@
 import { useState } from 'react';
+import { onLoginComplete } from './Auth';
+import { useAuth } from './AuthContext';
 
-const AUTH_SERVER_URL = 'http://localhost:3001'; // Replace with your auth server URL
-
-export async function verifyStytchSession(appJwt: string): Promise<string> {
-  const response = await fetch(`${AUTH_SERVER_URL}/auth/generate-stytch-token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', "authorization": `Bearer ${appJwt}` },
-  }).then(async (res) => {
-    if (!res.ok) {
-      throw new Error('Failed to verify Stytch session');
-    }
-    return res;
-  });
-  const data = await response.json();
-  return data.stytchJwt;
-}
+// const AUTH_SERVER_URL = 'http://localhost:3001'; // Replace with your auth server URL
 
 export function CustomLogin() {
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
+  const [loginToken, setLoginToken] = useState('');
   const [step, setStep] = useState<'email' | 'token'>('email');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // const [localError, setLocalError] = useState('');
+
+  const { genLoginToken, verifyToken, error, setError } = useAuth();
+
+  // const { error, setError } = useAuth();
 
   const handleSendToken = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,26 +21,28 @@ export function CustomLogin() {
     setError('');
 
     try {
-      const response = await fetch(`${AUTH_SERVER_URL}/auth/generate-token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
+      await genLoginToken(email);
 
-      const data = await response.json();
+      // const response = await fetch(`${AUTH_SERVER_URL}/auth/generate-token`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email }),
+      // });
 
-      if (!data.success) {
-        if (!data.userExist) {
-          setError('User not found. Please create an account at datalab.biggeo.com');
-          // Optionally redirect
-          setTimeout(() => {
-            window.location.href = 'https://datalab.biggeo.com';
-          }, 3000);
-        } else {
-          setError(data.message || 'Failed to send token');
-        }
-        return;
-      }
+      // const data = await response.json();
+
+      // if (!response.success) {
+      //   if (!response.userExist) {
+      //     setError('User not found. Please create an account at datalab.biggeo.com');
+      //     // Optionally redirect
+      //     setTimeout(() => {
+      //       window.location.href = 'https://datalab.biggeo.com';
+      //     }, 3000);
+      //   } else {
+      //     setError('Failed to send token. Please try again.');
+      //   }
+      //   return;
+      // }
 
       setStep('token');
     } catch (err) {
@@ -64,27 +58,28 @@ export function CustomLogin() {
     setError('');
 
     try {
+      await verifyToken(email, loginToken);
+
       // Step 1: Verify token with your auth server
-      const response = await fetch(`${AUTH_SERVER_URL}/auth/verify-token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, token }),
-      });
+      // const response = await fetch(`${AUTH_SERVER_URL}/auth/verify-token`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email, token }),
+      // });
 
-      if (!response.ok) {
-        throw new Error('Invalid token');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Invalid token');
+      // }
 
-      const data = await response.json();
+      // const data = await response.json();
 
       // Step 2: Store both tokens
-      localStorage.setItem('app_jwt', data.jwt); // Your app JWT
-      localStorage.setItem('stytch_session', data.stytchJwt); // Stytch jwt
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // localStorage.setItem('app_jwt', data.jwt); // Your app JWT
+      // localStorage.setItem('stytch_tat', data.stytchJwt); // Stytch jwt
+      // localStorage.setItem('user', JSON.stringify(data.user));
 
-      const returnTo = localStorage.getItem('returnTo');
-      // Redirect to app
-      window.location.href = returnTo || '/';
+      onLoginComplete();
+
     } catch (err) {
       setError('Invalid token. Please try again.');
     } finally {
@@ -121,8 +116,8 @@ export function CustomLogin() {
         <input
           type="text"
           placeholder="Enter token from email"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
+          value={loginToken}
+          onChange={(e) => setLoginToken(e.target.value)}
           required
         />
         <button type="submit" disabled={loading}>

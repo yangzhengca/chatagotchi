@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vite build --config vite.config.mts",
     "dev": "vite dev --config vite.config.mts",
-    "devb":"pnpm run build && pnpm run dev"
+    "devb": "pnpm run build && pnpm run dev"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +18,7 @@
     "@types/node": "^24.3.0",
     "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^4.5.2e",
+    "axios": "^1.12.0",
     "autoprefixer": "10.4.21",
     "fast-glob": "^3.3.3",
     "postcss": "8.5.6",

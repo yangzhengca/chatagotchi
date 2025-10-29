@@ -2,32 +2,82 @@
 
 import { useEffect, useState } from 'react';
 import { IdentityProvider } from '@stytch/react';
-import { profileId } from './StytchProvider';
-import { verifyStytchSession } from './CustomLogin';
+import { profileId, stytch } from './StytchProvider';
+import { redirectToLogin } from './Auth';
+import { useAuth } from './AuthContext';
 
 export const AuthorizePage = () => {
-  const [token, setToken] = useState<string | null>(null);
-
-  const appJwt = localStorage.getItem('app_jwt');
+  const { user, token, loading } = useAuth();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      if (typeof window === 'undefined') return;
-
-      if (appJwt) {
-        const stytchJwt = await verifyStytchSession(appJwt);
-        setToken(stytchJwt);
+    const attest = async () => {
+      if (token && !loading) {
+        const hasStytchSession = stytch.session.getInfo().session;
+        if (!hasStytchSession) {
+          await stytch.session.attest({
+            profile_id: profileId,
+            token,
+            session_duration_minutes: 60,
+          });
+        }
+        setIsReady(true);
       }
-
     };
+    attest();
+  }, [loading, token]);
 
-    checkAuthentication();
-  }, [appJwt]);
-
-  //this will be triggerred while not signed in before
-  if (!token) {
-    return null;
+  if (!loading && !user) {
+    redirectToLogin(window.location.href);
   }
+
+  if (loading || !isReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-gray-500 mb-4">Preparing OAuth authorization...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const isProfileScope = (scope: string) => scope === 'openid' || scope === 'email' || scope === 'profile';
+  // const isDataScope = (scope: string) => !isProfileScope(scope);
+
+  const getScopeDescription = (scope: string) => {
+    switch (scope) {
+      case 'openid':
+        return 'Your account ID';
+      case 'email':
+        return 'Your email address';
+      case 'profile':
+        return 'Your name and profile picture';
+      case 'read:data':
+        return 'Read access to your data';
+      case 'write:data':
+        return 'Write access to your data';
+      default:
+        return `The ${scope} permission`;
+    }
+  };
+
+  const getManifest = ({ scopes, clientName }: { scopes: string[]; clientName: string }) => [
+    {
+      header: `${clientName} wants to view your Profile`,
+      items: [
+        {
+          text: 'View information stored in your Profile about your account and your user.',
+          details: scopes.filter(isProfileScope).map(getScopeDescription),
+        },
+      ],
+    },
+    // {
+    //   header: `${clientName} wants to access your Data`,
+    //   items: scopes.filter(isDataScope).map(getScopeDescription),
+    // },
+  ];
+
 
   return (
     <div className="container">
@@ -36,9 +86,10 @@ export const AuthorizePage = () => {
           <h1 className="header">Stytch OAuth Authorization</h1>
           <IdentityProvider
             authTokenParams={{
-              trustedAuthToken: token,
+              trustedAuthToken: token!,
               tokenProfileID: profileId,
             }}
+            getIDPConsentManifest={getManifest}
           />
         </div>
       </div>

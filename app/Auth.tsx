@@ -39,7 +39,7 @@ export const withLoginRequired = (Component: React.FC) => () => {
  * - If `returnTo` exists, clears its value from local storage and navigates to the specified URL.
  * - If `returnTo` does not exist, redirects the user to the default '/home' location.
  */
-const onLoginComplete = () => {
+export const onLoginComplete = () => {
   const returnTo = localStorage.getItem('returnTo');
   if (returnTo) {
     localStorage.setItem('returnTo', '');
@@ -48,6 +48,13 @@ const onLoginComplete = () => {
     window.location.href = '/home';
   }
 };
+
+// If the user is unauthenticated, store the full location to return to
+// query parameters and all
+export const redirectToLogin = (returnState: string) => {
+  localStorage.setItem('returnTo', returnState);
+  window.location.href = '/login'
+}
 
 /**
  * The Login page implementation. Wraps the StytchLogin UI component.
@@ -252,7 +259,7 @@ export const Logout = function () {
   if (!user) return null;
   const handleLogout = () => {
     localStorage.setItem('app_jwt', ""); // Your app JWT
-    localStorage.setItem('stytch_session', ""); // Stytch jwt
+    localStorage.setItem('stytch_tat', ""); // Stytch jwt
     localStorage.setItem('returnTo', "");
     localStorage.setItem('user', "");
     stytch.session.revoke();
