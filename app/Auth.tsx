@@ -1,14 +1,10 @@
 import {
-  OAuthProviders,
-  OTPMethods,
-  Products,
-  StytchEvent,
-  StytchLoginConfig,
   parseOAuthAuthorizeParams,
 } from '@stytch/vanilla-js';
-import { StytchLogin, useStytch, useStytchUser } from '@stytch/react';
+import { useStytch, useStytchUser } from '@stytch/react';
 import { useEffect, useMemo, useState } from 'react';
 import { CustomLogin } from './CustomLogin';
+import { useAuth } from './AuthContext';
 
 /**
  * A higher-order component that enforces a login requirement for the wrapped component.
@@ -94,6 +90,7 @@ export function Login() {
 /**
  * The OAuth Authorization page implementation with custom whimsical UI
  */
+// TODO: remove
 export const Authorize = withLoginRequired(function () {
   const stytch = useStytch();
   const [loading, setLoading] = useState(true);
@@ -253,23 +250,15 @@ export function Authenticate() {
 }
 
 export const Logout = function () {
-  const stytch = useStytch();
+  const { logout } = useAuth();
   const { user } = useStytchUser();
 
   if (!user) return null;
-  const handleLogout = () => {
-    localStorage.setItem('app_jwt', ""); // Your app JWT
-    localStorage.setItem('stytch_tat', ""); // Stytch jwt
-    localStorage.setItem('returnTo', "");
-    localStorage.setItem('user', "");
-    stytch.session.revoke();
-
-  };
 
   return (
     <button
       className="ml-2 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 underline"
-      onClick={handleLogout}
+      onClick={logout}
     >
       Log Out
     </button>
