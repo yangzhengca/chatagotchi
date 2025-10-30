@@ -1,8 +1,13 @@
-import { useStytchUser } from '@stytch/react';
+import { useStytchSession, useStytchUser } from '@stytch/react';
 import { Logout } from './Auth.tsx';
 
 export default function Home() {
   const { user } = useStytchUser();
+  const { session } = useStytchSession();
+
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Stytch Session:', session);
+
+
   return (
     <div className="space-y-4">
       <h1 className="text-4xl font-bold mb-6">BigGeo MCP Server Demo</h1>
