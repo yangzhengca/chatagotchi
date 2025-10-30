@@ -12,7 +12,6 @@ interface GenLoginCodeResponse {
 interface VerifyTokenResponse {
   jwt: string;
   stytchJwt: string;
-  profileId: string;
   user: {
     id: string;
     email: string;
