@@ -42,7 +42,7 @@ export const AuthorizePage = () => {
             onClick={async () => {
               await logout();
             }}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="px-4 py-2 text-gray-500 rounded hover:bg-blue-600"
           >
             Refresh
           </button>
