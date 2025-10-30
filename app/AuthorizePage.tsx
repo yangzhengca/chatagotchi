@@ -7,7 +7,7 @@ import { redirectToLogin } from './Auth';
 import { useAuth } from './AuthContext';
 
 export const AuthorizePage = () => {
-  const { user, token, loading } = useAuth();
+  const { user, token, loading, logout } = useAuth();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -33,10 +33,19 @@ export const AuthorizePage = () => {
 
   if (loading || !isReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="text-gray-500 mb-4">Preparing OAuth authorization...</div>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+          <div className="text-gray-500 mb-8 mt-4">If you saw this page for a long time, please click below button to refresh the page.</div>
+          <button
+            onClick={async () => {
+              await logout();
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Refresh
+          </button>
         </div>
       </div>
     );
