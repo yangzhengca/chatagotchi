@@ -1,8 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { authServerUrl } from './StytchProvider';
 
-// const AUTH_SERVER_URL = 'http://localhost:3001';
-
 interface GenLoginCodeResponse {
   email: string;
   success: boolean;
@@ -25,6 +23,7 @@ const api = axios.create({
   baseURL: authServerUrl,
   headers: {
     'Content-Type': 'application/json',
+    'x-client-id': 'mcp',
   },
 });
 
@@ -38,7 +37,10 @@ export const authApi = {
     );
     return response.data;
   },
-  verifyToken: async (email: string, token: string): Promise<VerifyTokenResponse> => {
+  verifyToken: async (
+    email: string,
+    token: string
+  ): Promise<VerifyTokenResponse> => {
     const response: AxiosResponse<VerifyTokenResponse> = await api.post(
       '/auth/verify-token',
       {
@@ -47,5 +49,5 @@ export const authApi = {
       }
     );
     return response.data;
-  }
+  },
 };
